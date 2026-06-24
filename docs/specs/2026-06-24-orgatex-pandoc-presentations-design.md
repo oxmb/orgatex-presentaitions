@@ -59,21 +59,23 @@ it directly (verified: `--reference-doc=...potx` exits 0). Rendered decks remain
    - Unzips `orgatex-template.potx` into a working directory.
    - **Rename:** renames the seven layouts pandoc needs by editing only the
      `<p:cSld name="...">` attribute in the relevant `slideLayoutN.xml` files.
-   - **Detach example content from the part graph:** removes `<p:sldIdLst>` and
-     `<p:notesMasterIdLst>` from `presentation.xml`; drops the slide / notes /
-     customXml relationships from `presentation.xml.rels`. All 24 layouts and
-     the slide master are left untouched (see "Why all 24 layouts are kept").
+   - **Detach example content and embedded fonts from the part graph:** removes
+     `<p:sldIdLst>`, `<p:notesMasterIdLst>` and `<p:embeddedFontLst>` (plus the
+     `embedTrueTypeFonts`/`saveSubsetFonts` flags) from `presentation.xml`; drops
+     the slide / notes / customXml / font relationships from
+     `presentation.xml.rels`. All 24 layouts and the slide master are left
+     untouched (see "Why all 24 layouts are kept"). Fonts are stripped on purpose
+     (see "Why embedded fonts are stripped").
    - **Reachability GC:** keeps only parts reachable from `presentation.xml`
      through the relationship graph; deletes everything else. This is what makes
      the strip robust - it automatically sweeps orphans that directory-by-
-     directory deletion misses (verified: it removed `theme2.xml` and
-     `themeOverride1.xml`, which also eliminated the stray Calibri font for
-     free).
+     directory deletion misses (verified: it removed `theme2.xml`,
+     `themeOverride1.xml`, and the now-unreferenced `.fntdata` font parts).
    - **Prune + re-zip:** drops `[Content_Types].xml` Override entries for deleted
      parts, then re-zips as `orgatex-reference.potx`.
    - Survivors: master, all 24 layouts, `theme1.xml`, the branding media they
-     reference, the 14 embedded Mundial fonts, and presentation properties.
-     Result: ~3.6 MB (from 4.4 MB).
+     reference, and presentation properties. No embedded fonts.
+     Result: ~0.4 MB reference; deck ~0.45 MB (from a 4.4 MB template).
 2. `Makefile`
    - `make reference` - regenerate `orgatex-reference.potx` from the `.potx`.
    - `make output/<name>.pptx` - render `presentations/<name>.md`.
@@ -127,8 +129,22 @@ and silently "repairs". Keeping all 24 ORGATEX layouts, with the master's
 `sldLayoutIdLst` intact, gives pandoc every layout slot it needs from a
 fully consistent master, so it injects nothing and the deck is clean. The
 validator enforces this: it asserts every layout part in the rendered deck is
-registered in the master. Cost of keeping 24 vs 7: about 0.4 MB
-(reference ~3.6 MB instead of ~3.2 MB).
+registered in the master.
+
+**Why embedded fonts are stripped (PowerPoint-web lesson):** the template embeds
+its fonts (Mundial family + a stray Calibri), and an earlier version kept them
+for portability. That made every generated deck open **read-only** in PowerPoint
+for the web, which cannot edit a presentation containing embedded fonts; the
+embedded-font binaries also triggered a repair in the desktop app. The build
+therefore strips `embeddedFontLst`, the `embedTrueTypeFonts`/`saveSubsetFonts`
+flags, and the font relationships; the GC then sweeps the `.fntdata` parts. The
+deck still references Mundial through the theme, and Mundial is available in the
+target environment (installed locally and as an organisation font in Microsoft
+365), so it renders correctly and stays editable. The validator enforces this:
+it asserts the rendered deck embeds no fonts. This drops the deck from ~3.6 MB
+to ~0.45 MB. Trade-off: a deck opened where Mundial is not available falls back
+to a substitute font; that is acceptable here and is the same behaviour as the
+ORGATEX decks that already work in this environment.
 
 ## Authoring conventions
 
@@ -153,11 +169,11 @@ placeholder deck proves the pipeline before real content exists.
   targets, no `[Content_Types].xml` Override pointing at a missing part, every
   surviving part has a content type and an inbound reference (no orphans).
 - Unzip an output deck and confirm its slide layouts carry ORGATEX names
-  (branding present), not pandoc defaults, and that the embedded Mundial fonts
-  survive (branding intact). Reference ~3.6 MB, deck ~3.6 MB, both dominated by
-  the embedded fonts; this is intended.
+  (branding present), not pandoc defaults. Reference ~0.4 MB, deck ~0.45 MB.
 - Confirm every layout part in the rendered deck is registered in the slide
   master (no orphan layouts), so PowerPoint accepts the deck without repairing.
+- Confirm the rendered deck embeds no fonts (`embeddedFontLst` absent, no
+  `.fntdata` parts), so PowerPoint for the web keeps it editable.
 - Render headless with LibreOffice to confirm the deck opens and displays in
   Mundial.
 
@@ -165,17 +181,18 @@ placeholder deck proves the pipeline before real content exists.
 
 - Standard content layouts (`Titel und Inhalt`, `Zwei Inhalte`) are the
   workhorses; `_weiss` variants are reserved for Comparison.
-- The reference keeps all 24 layouts, the master, the theme, the branding media
-  they reference, and the embedded fonts. Only example content (27 slides,
-  charts, chart-backing Excel, notes, custom XML) is removed via reachability GC.
+- The reference keeps all 24 layouts, the master, the theme, and the branding
+  media they reference. Example content (27 slides, charts, chart-backing Excel,
+  notes, custom XML) and the embedded fonts are removed via reachability GC.
   Layouts are deliberately NOT trimmed - doing so makes pandoc inject
   unregistered default layouts that PowerPoint flags as corrupt (see "Why all 24
   layouts are kept"). Verified to render with zero warnings, pass the integrity
   check, and produce an orphan-free deck.
-- Embedded Mundial fonts are kept so decks render in the correct typeface on any
-  machine (portable). The template's font scheme is Mundial Black (major) /
-  Mundial Thin (minor). The stray Calibri is removed as a side effect of the GC
-  (it lived only in the discarded notes-master theme).
+- Embedded fonts are stripped so decks stay editable in PowerPoint for the web
+  (see "Why embedded fonts are stripped"). The deck references Mundial through
+  the theme (scheme: Mundial Black major / Mundial Thin minor); Mundial is
+  available in the target environment. The stray Calibri embed disappears with
+  the rest of the fonts.
 - The generated reference is git-ignored and regenerated via `make reference`;
   the binary is never the source of truth.
 
@@ -185,6 +202,8 @@ placeholder deck proves the pipeline before real content exists.
   decks are validated by OOXML integrity checks plus LibreOffice rendering as a
   proxy; a one-time manual open in PowerPoint is recommended before relying on
   the workflow.
-- If lean (font-free) decks are ever needed for machines that have Mundial
-  installed, font embedding could be stripped as a separate build variant; out
-  of scope for this work.
+- Decks rely on Mundial being available wherever they are opened (installed
+  locally, or as a Microsoft 365 organisation font). On a machine without
+  Mundial, text falls back to a substitute. Embedding the fonts to make decks
+  self-contained is incompatible with editing in PowerPoint for the web, so it
+  is intentionally not done.
