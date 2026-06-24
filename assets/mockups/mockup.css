@@ -1,0 +1,22 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+  background: #ffffff;
+  width: 900px;
+  padding: 24px 28px;
+  color: #1d1c1d;
+}
+.msg { display: flex; gap: 12px; padding: 10px 0; }
+.avatar {
+  width: 40px; height: 40px; border-radius: 8px; flex: 0 0 40px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; color: #fff; font-size: 16px;
+}
+.avatar.du { background: #4a154b; }
+.avatar.hermes { background: #1264a3; }
+.body { flex: 1; }
+.head { display: flex; align-items: baseline; gap: 8px; }
+.name { font-weight: 700; font-size: 15px; }
+.time { color: #616061; font-size: 12px; }
+.text { font-size: 15px; line-height: 1.46; margin-top: 2px; }
+.text + .text { margin-top: 6px; }
