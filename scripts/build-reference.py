@@ -5,8 +5,8 @@ Usage: build-reference.py <template.potx> <reference.potx>
 
 Steps:
   1. rename the 7 layouts pandoc addresses by name;
-  2. detach example content from the part graph (slide list, notes master,
-     custom XML);
+  2. detach example content (slide list, notes master, custom XML) and the
+     embedded fonts from the part graph;
   3. garbage-collect every part no longer reachable from presentation.xml;
   4. prune [Content_Types].xml to surviving parts and re-zip.
 
@@ -15,10 +15,14 @@ layouts must NOT be trimmed: pandoc fills any layout slot missing from the
 reference with its own unregistered default layout, which leaves orphan layout
 parts in the output deck and makes PowerPoint flag it as corrupt ("repair").
 
+Embedded fonts are stripped: PowerPoint for the web cannot edit a deck that
+contains embedded fonts and opens it read-only, and the template's embedded-font
+binaries also trigger a repair in the desktop app. Mundial is available in the
+target environment, so the deck references it (via the theme) without embedding.
+
 The design system pandoc uses survives intact: the slide master, all 24
-layouts, the theme, the branding media they reference, and the embedded Mundial
-fonts (kept so decks render in the correct typeface on any machine). Only the
-example content (slides, charts, notes, custom XML) is stripped.
+layouts, the theme, and the branding media they reference. Only example content
+and the embedded fonts are stripped.
 """
 import os
 import re
@@ -72,19 +76,27 @@ def build(work, out):
         assert f'cSld name="{new}"' in s, f"rename failed in {fn}"
         write(fp, s)
 
-    # 2a. presentation.xml: detach the example slide list and notes master
+    # 2a. presentation.xml: detach the example slide list and notes master,
+    #     and strip embedded fonts. PowerPoint for the web cannot edit a deck
+    #     that embeds fonts and opens it read-only; the template's embedded-font
+    #     binaries also trigger a repair in the desktop app. Mundial is
+    #     available in the target environment, so the deck references it without
+    #     embedding. Removing the references here lets the GC sweep the .fntdata.
     pres = wp("ppt", "presentation.xml")
     s = read(pres)
     s = re.sub(r"<p:sldIdLst>.*?</p:sldIdLst>", "", s, flags=re.S)
     s = re.sub(r"<p:notesMasterIdLst>.*?</p:notesMasterIdLst>", "", s, flags=re.S)
+    s = re.sub(r"<p:embeddedFontLst>.*?</p:embeddedFontLst>", "", s, flags=re.S)
+    s = re.sub(r'\s*embedTrueTypeFonts="[^"]*"', "", s)
+    s = re.sub(r'\s*saveSubsetFonts="[^"]*"', "", s)
     write(pres, s)
 
-    # 2b. presentation.xml.rels: drop slide / notesMaster / customXml rels
+    # 2b. presentation.xml.rels: drop slide / notesMaster / customXml / font rels
     relf = wp("ppt", "_rels", "presentation.xml.rels")
     s = re.sub(
         r"<Relationship\b[^>]*/>",
         lambda m: "" if re.search(
-            r'Target="[^"]*(slides/|notesMasters/|customXml/)', m.group(0))
+            r'Target="[^"]*(slides/|notesMasters/|customXml/|fonts/)', m.group(0))
         else m.group(0),
         read(relf))
     write(relf, s)
