@@ -77,7 +77,8 @@ Jeder Mockup ist ein kurzer, realistischer Verlauf. „Du" ist die Vertriebspers
 > **Hermes:** Bauer GmbH, Maschinenbau aus Augsburg, rund 200 Mitarbeiter.
 > Ansprechpartner laut CRM: Klaus Müller, Einkaufsleiter. Aktuell: neue
 > Produktionshalle eröffnet (Pressemitteilung letzte Woche), Expansion in die
-> Lebensmittelbranche. Tipp: stell den Bezug zur neuen Halle her.
+> Lebensmittelbranche. Tipp: stell den Bezug zur neuen Halle her - dort braucht
+> es Bodenmarkierung und Behälterkennzeichnung.
 
 ### 2. E-Mails entwerfen
 
@@ -105,11 +106,11 @@ Jeder Mockup ist ein kurzer, realistischer Verlauf. „Du" ist die Vertriebspers
 
 ### 4. Schnelle Antworten unterwegs
 
-> **Du:** *(vom Handy)* Kunde fragt gerade: Liefern wir Modell X auch in
-> Edelstahl? Schnell bitte!
+> **Du:** *(vom Handy)* Kunde fragt gerade: Hält die LongLife Bodenmarkierung
+> auch dauerhaften Staplerverkehr aus? Schnell bitte!
 >
-> **Hermes:** Ja. Modell X gibt es in Edelstahl (V2A), Aufpreis 12 %, Lieferzeit
-> 3 Wochen. Soll ich dir das Datenblatt schicken?
+> **Hermes:** Ja, genau dafür ist LongLife gemacht: abriebfest, für Stapler- und
+> Routenzugverkehr ausgelegt. Soll ich dir das Datenblatt schicken?
 
 ## Asset-Pipeline
 
