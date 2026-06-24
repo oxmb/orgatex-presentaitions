@@ -41,7 +41,7 @@ each deck against it. The original `orgatex-template.potx` stays untouched and
 authoritative.
 
 ```
-orgatex-template.potx ──(build-reference.sh)──▶ orgatex-reference.potx
+orgatex-template.potx ──(build-reference.py)──▶ orgatex-reference.potx
                                                         │
 presentations/*.md ──────────(pandoc)───────────────────┴──▶ output/*.pptx
 ```
@@ -55,14 +55,26 @@ it directly (verified: `--reference-doc=...potx` exits 0). Rendered decks remain
 
 ## Components
 
-1. `scripts/build-reference.sh`
+1. `scripts/build-reference.py` (Python 3 stdlib only: `zipfile`, `re`, `os`)
    - Unzips `orgatex-template.potx` into a working directory.
-   - Renames the seven layouts pandoc needs by editing only the
+   - **Rename:** renames the seven layouts pandoc needs by editing only the
      `<p:cSld name="...">` attribute in the relevant `slideLayoutN.xml` files.
-   - Re-zips the result as `orgatex-reference.potx`.
-   - Nothing else is touched: media, embedded fonts, master, theme, and the
-     example slides are left intact. Renaming the seven layouts is the entire
-     fix.
+   - **Detach example content from the part graph:** removes `<p:sldIdLst>` and
+     `<p:notesMasterIdLst>` from `presentation.xml`; drops the slide / notes /
+     customXml relationships from `presentation.xml.rels`; removes the 17 unused
+     layouts from the slide master (`<p:sldLayoutId>` entries plus their
+     relationships).
+   - **Reachability GC:** keeps only parts reachable from `presentation.xml`
+     through the relationship graph; deletes everything else. This is what makes
+     the strip robust - it automatically sweeps orphans that directory-by-
+     directory deletion misses (verified: it removed `theme2.xml` and
+     `themeOverride1.xml`, which also eliminated the stray Calibri font for
+     free).
+   - **Prune + re-zip:** drops `[Content_Types].xml` Override entries for deleted
+     parts, then re-zips as `orgatex-reference.potx`.
+   - Survivors: master, the 7 kept layouts, `theme1.xml`, the 7 branding media
+     they reference, the 14 embedded Mundial fonts, and presentation
+     properties. Result: ~3.2 MB (from 4.4 MB).
 2. `Makefile`
    - `make reference` - regenerate `orgatex-reference.potx` from the `.potx`.
    - `make output/<name>.pptx` - render `presentations/<name>.md`.
@@ -76,7 +88,7 @@ it directly (verified: `--reference-doc=...potx` exits 0). Rendered decks remain
 
 ```
 orgatex-template.potx            committed (source of truth, untouched)
-scripts/build-reference.sh       committed
+scripts/build-reference.py       committed
 pandoc/defaults.yaml             committed
 presentations/*.md               committed
 Makefile                         committed
@@ -102,9 +114,10 @@ The first four are exact placeholder matches and cover the overwhelming majority
 of real slides. The last three are pandoc fall-back layouts rarely triggered by
 ordinary markdown; they are mapped to the closest ORGATEX variant.
 
-The transform renames only these seven layouts. The original German names remain
-in `orgatex-template.potx` for normal PowerPoint use; only the generated
-reference carries the English names.
+Only these seven layouts are kept in the reference; the other 17 (which pandoc
+can never auto-select by name) are dropped. The original German names and the
+full 24-layout set remain in `orgatex-template.potx` for normal PowerPoint use;
+only the generated reference is trimmed and carries the English names.
 
 ## Authoring conventions
 
@@ -125,11 +138,13 @@ placeholder deck proves the pipeline before real content exists.
 
 - Run pandoc against the generated reference and confirm **zero**
   `Couldn't find layout` warnings.
+- Run an integrity check on the generated reference: no dangling relationship
+  targets, no `[Content_Types].xml` Override pointing at a missing part, every
+  surviving part has a content type and an inbound reference (no orphans).
 - Unzip an output deck and confirm its slide layouts carry ORGATEX names
-  (branding present), not pandoc defaults.
-- Confirm the embedded Mundial fonts and ORGATEX media survive into the output
-  (branding intact). Each deck is expected to be ~4 MB, dominated by the
-  embedded fonts; this is intended.
+  (branding present), not pandoc defaults, and that the embedded Mundial fonts
+  survive (branding intact). Reference ~3.2 MB, deck ~3.2 MB, both dominated by
+  the embedded fonts; this is intended.
 - Render headless with LibreOffice to confirm the deck opens and displays in
   Mundial.
 
@@ -137,21 +152,24 @@ placeholder deck proves the pipeline before real content exists.
 
 - Standard content layouts (`Titel und Inhalt`, `Zwei Inhalte`) are the
   workhorses; `_weiss` variants are reserved for Comparison.
-- The transform renames layouts only; nothing is stripped. Investigation showed
-  the 4.3 MB template is ~3.3 MB embedded Mundial fonts and <1 MB media, of
-  which 16/18 files are branding the layouts reference. Only 2 media files are
-  example-only, so stripping buys nothing and risks the design.
+- The reference is stripped to the minimum pandoc needs: 7 layouts, master,
+  theme, the branding media those reference, and the embedded fonts. All example
+  content (27 slides, charts, chart-backing Excel, notes, custom XML, the 17
+  unused layouts and their media) is removed via reachability GC. Verified to
+  render with zero warnings and pass the integrity check.
 - Embedded Mundial fonts are kept so decks render in the correct typeface on any
-  machine (portable, ~4 MB per deck). The template's font scheme is
-  Mundial Black (major) / Mundial Thin (minor).
+  machine (portable). The template's font scheme is Mundial Black (major) /
+  Mundial Thin (minor). The stray Calibri is removed as a side effect of the GC
+  (it lived only in the discarded notes-master theme).
 - The generated reference is git-ignored and regenerated via `make reference`;
   the binary is never the source of truth.
 
 ## Risks / open items
 
-- The template embeds a stray `Calibri` alongside the Mundial family (likely a
-  leftover from one text box). It is harmless and left in place; removing it is
-  optional cleanup, not required.
-- Each deck carries ~3.3 MB of embedded Mundial fonts by design. If lean decks
-  are ever needed, font embedding could be stripped as a separate build variant;
-  out of scope for this work.
+- PowerPoint itself cannot be exercised in this environment. The reference and
+  decks are validated by OOXML integrity checks plus LibreOffice rendering as a
+  proxy; a one-time manual open in PowerPoint is recommended before relying on
+  the workflow.
+- If lean (font-free) decks are ever needed for machines that have Mundial
+  installed, font embedding could be stripped as a separate build variant; out
+  of scope for this work.
