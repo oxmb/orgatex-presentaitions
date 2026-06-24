@@ -149,6 +149,30 @@ def render(ref, md):
                 if f'cSld name="{expected}"' not in names:
                     fail(f"deck missing branded layout {expected!r}")
             print("OK: deck carries ORGATEX branded layouts")
+
+            # Every slideLayout part must be registered in the master's
+            # relationships. Pandoc injects its own default layouts when the
+            # reference master is missing layout slots it expects; those
+            # injected layouts are left unregistered, and PowerPoint flags the
+            # deck as corrupt and "repairs" it. Catch that here.
+            mrel_path = os.path.join(
+                chk, "ppt", "slideMasters", "_rels", "slideMaster1.xml.rels")
+            with open(mrel_path, encoding="utf-8") as fh:
+                mrel = fh.read()
+            registered = {
+                os.path.basename(re.search(r'Target="([^"]*)"', rel).group(1))
+                for rel in re.findall(r"<Relationship\b[^>]*/>", mrel)
+                if "slideLayout" in rel
+            }
+            layout_parts = {
+                os.path.basename(f)
+                for f in glob.glob(chk + "/ppt/slideLayouts/slideLayout*.xml")
+            }
+            orphans = sorted(layout_parts - registered)
+            if orphans:
+                fail("deck has layout parts not registered in the master "
+                     f"(PowerPoint will repair): {orphans}")
+            print("OK: every deck layout is registered in the master")
         finally:
             shutil.rmtree(chk, ignore_errors=True)
     finally:

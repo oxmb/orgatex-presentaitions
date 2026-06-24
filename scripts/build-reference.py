@@ -6,13 +6,19 @@ Usage: build-reference.py <template.potx> <reference.potx>
 Steps:
   1. rename the 7 layouts pandoc addresses by name;
   2. detach example content from the part graph (slide list, notes master,
-     custom XML, the 17 unused layouts);
+     custom XML);
   3. garbage-collect every part no longer reachable from presentation.xml;
   4. prune [Content_Types].xml to surviving parts and re-zip.
 
-The design system pandoc actually uses survives: the slide master, the 7 kept
+All 24 ORGATEX layouts are kept and stay registered in the slide master. The
+layouts must NOT be trimmed: pandoc fills any layout slot missing from the
+reference with its own unregistered default layout, which leaves orphan layout
+parts in the output deck and makes PowerPoint flag it as corrupt ("repair").
+
+The design system pandoc uses survives intact: the slide master, all 24
 layouts, the theme, the branding media they reference, and the embedded Mundial
-fonts (kept so decks render in the correct typeface on any machine).
+fonts (kept so decks render in the correct typeface on any machine). Only the
+example content (slides, charts, notes, custom XML) is stripped.
 """
 import os
 import re
@@ -30,7 +36,6 @@ RENAMES = {
     "slideLayout13.xml": ("Diagramm 1",         "Content with Caption"),
     "slideLayout16.xml": ("Nur Titel",          "Blank"),
 }
-KEEP_LAYOUTS = {1, 3, 8, 10, 12, 13, 16}
 
 
 def main(src, out):
@@ -60,10 +65,6 @@ def build(work, out):
         m = re.search(name + r'="([^"]*)"', rel)
         return m.group(1) if m else None
 
-    def layout_num(s):
-        m = re.search(r"slideLayout(\d+)\.xml", s)
-        return int(m.group(1)) if m else None
-
     # 1. rename the 7 layouts pandoc needs
     for fn, (old, new) in RENAMES.items():
         fp = wp("ppt", "slideLayouts", fn)
@@ -87,25 +88,6 @@ def build(work, out):
         else m.group(0),
         read(relf))
     write(relf, s)
-
-    # 2c. slide master: drop the 17 unused layouts (rels + sldLayoutIdLst)
-    mrel = wp("ppt", "slideMasters", "_rels", "slideMaster1.xml.rels")
-    dropped = set()
-
-    def drop_master_rel(m):
-        rel = m.group(0)
-        n = layout_num(attr(rel, "Target") or "")
-        if n is not None and n not in KEEP_LAYOUTS:
-            dropped.add(attr(rel, "Id"))
-            return ""
-        return rel
-    write(mrel, re.sub(r"<Relationship\b[^>]*/>", drop_master_rel, read(mrel)))
-
-    master = wp("ppt", "slideMasters", "slideMaster1.xml")
-    write(master, re.sub(
-        r"<p:sldLayoutId\b[^>]*/>",
-        lambda m: "" if attr(m.group(0), "r:id") in dropped else m.group(0),
-        read(master)))
 
     # 3. reachability GC from the package root
     def rels_path(part):
