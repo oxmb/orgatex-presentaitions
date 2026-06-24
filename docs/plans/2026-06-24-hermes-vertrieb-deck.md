@@ -4,258 +4,59 @@
 
 **Goal:** Render a branded ORGATEX PowerPoint deck that pitches the Hermes agent to sales, from a German markdown source with Slack-style chat mockups.
 
-**Architecture:** A transform script renames seven layouts in the untouched `orgatex-template.potx` to the English names pandoc expects, producing a git-ignored reference template. A second script renders HTML chat mockups to PNG via headless Chromium. Pandoc renders `presentations/hermes-vertrieb.md` against the reference, embedding the mockups. A Makefile ties the three stages together.
+**Architecture:** The Pandoc pipeline already exists (`scripts/build-reference.py`, `scripts/check-reference.py`, `Makefile`, `pandoc/defaults.yaml`) and renders any `presentations/*.md` against a layout-renamed, GC-stripped ORGATEX reference. This plan adds only the Hermes-specific work: a HTML-to-PNG mockup renderer, four Slack-style chat mockups, the Makefile wiring for them, and the deck source. Pandoc runs from the repo root.
 
-**Tech Stack:** pandoc, bash, zip/unzip, headless chromium, libreoffice (verification), GNU make.
+**Tech Stack:** existing: pandoc, python3, make. Added: headless chromium (mockup rendering), libreoffice (deck open-check).
+
+## Pre-existing pipeline (do NOT rebuild)
+
+These are already implemented and verified by `make check`; build on them, do not duplicate:
+
+- `scripts/build-reference.py <template> <reference>` — renames the 7 layouts and strips example content via reachability-GC, keeping fonts/media/theme/master.
+- `scripts/check-reference.py <reference> <smoke.md>` — OOXML integrity + zero-warning render + branding check.
+- `Makefile` targets: `all`, `reference`, `check`, `clean`; rule `output/%.pptx: presentations/%.md $(REFERENCE) pandoc/defaults.yaml | output`.
+- `pandoc/defaults.yaml`: `reference-doc: orgatex-reference.potx`, `slide-level: 2`.
+- `presentations/smoke-test.md` (pipeline test fixture), `presentations/intelligence-architecture.md` (unrelated placeholder — leave untouched).
 
 ## Global Constraints
 
 - All deck copy is **German with echte Umlaute** (ä, ö, ü, ß) - never ae/oe/ue/ss.
 - **Never use em-dash** (—) or en-dash (–); use a hyphen (-) or colon.
-- `slide-level: 2`: a level-1 heading (`#`) is a Section Header slide, level-2 (`##`) a content slide.
+- `slide-level: 2`: a level-1 heading (`#`) is a Section Header slide, level-2 (`##`) a content slide. The deck uses content slides throughout.
+- **Column fences follow the repo convention:** outer `::: columns`, inner `:::: column` (four colons), as in `presentations/smoke-test.md`.
+- **Image paths are root-relative** (`assets/mockups/x.png`), because the Makefile invokes pandoc from the repo root.
 - Mockup style is **Slack**; chat dialogue is German; ORGATEX product names are real (LongLife Bodenmarkierung, Behälterkennzeichnung), customer names are fictional (Bauer GmbH, Klaus Müller).
-- **Verified layout rename mapping** (match the exact quoted `<p:cSld name="...">` attribute):
-  | German (in template) | English (in reference) |
-  |-----------------------|------------------------|
-  | `Titelfolie`          | `Title Slide`          |
-  | `Kapitel 1`           | `Section Header`       |
-  | `Titel und Inhalt`    | `Title and Content`    |
-  | `Zwei Inhalte`        | `Two Content`          |
-  | `Zwei Inhalte_weiss`  | `Comparison`           |
-  | `Diagramm 1`          | `Content with Caption` |
-  | `Nur Titel`           | `Blank`                |
-- `orgatex-template.potx` is the untouched source of truth; never edit it.
-- Generated artefacts are git-ignored: `orgatex-reference.potx`, `output/`. Committed: scripts, Makefile, `pandoc/defaults.yaml`, `assets/mockups/*.{html,css,png}`, `presentations/*.md`.
-- Pandoc is invoked from the repo root; image paths in markdown are root-relative.
+- Generated artefacts are git-ignored: `orgatex-reference.potx`, `output/`. Committed: scripts, Makefile, `pandoc/defaults.yaml`, `assets/mockups/*.{html,css,png}`, `presentations/*.md`. The mockup PNGs are committed so building the deck does not require chromium; they are NOT removed by `make clean`.
 - Commit messages: English, no ticket number, one topic per commit.
 
 ---
 
-### Task 1: Reference-template build script
+### Task 1: Baseline sanity check
 
-**Files:**
-- Create: `scripts/build-reference.sh`
+**Files:** none (verification only).
 
 **Interfaces:**
-- Produces: executable `scripts/build-reference.sh` that reads `orgatex-template.potx` and writes `orgatex-reference.potx` in the repo root with the seven layouts renamed.
+- Produces: confirmation that the existing pipeline is green before new work starts.
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Run the existing pipeline check**
 
-Create `scripts/test-reference.sh`:
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-scripts/build-reference.sh
-work="$(mktemp -d)"
-trap 'rm -rf "$work"' EXIT
-unzip -q orgatex-reference.potx -d "$work"
-for name in "Title Slide" "Section Header" "Title and Content" \
-            "Two Content" "Comparison" "Content with Caption" "Blank"; do
-  if ! grep -rqF "<p:cSld name=\"$name\"" "$work/ppt/slideLayouts/"; then
-    echo "MISSING layout: $name" >&2
-    exit 1
-  fi
-done
-echo "OK: all seven pandoc layout names present"
-```
-
-- [ ] **Step 2: Run the test to verify it fails**
-
-Run: `chmod +x scripts/test-reference.sh && scripts/test-reference.sh`
-Expected: FAIL - `scripts/build-reference.sh: No such file or directory`.
-
-- [ ] **Step 3: Write the build script**
-
-Create `scripts/build-reference.sh`:
-
-```bash
-#!/usr/bin/env bash
-# Regenerate a pandoc-compatible ORGATEX reference template by renaming the
-# seven layouts pandoc locates by English name. The source .potx is untouched.
-set -euo pipefail
-
-src="orgatex-template.potx"
-out="orgatex-reference.potx"
-work="$(mktemp -d)"
-trap 'rm -rf "$work"' EXIT
-
-unzip -q "$src" -d "$work"
-layouts="$work/ppt/slideLayouts"
-
-rename() { # $1 = German name, $2 = English name
-  local f
-  for f in "$layouts"/slideLayout*.xml; do
-    sed -i "s/<p:cSld name=\"$1\"/<p:cSld name=\"$2\"/" "$f"
-  done
-}
-
-rename "Titelfolie"         "Title Slide"
-rename "Kapitel 1"          "Section Header"
-rename "Titel und Inhalt"   "Title and Content"
-rename "Zwei Inhalte"       "Two Content"
-rename "Zwei Inhalte_weiss" "Comparison"
-rename "Diagramm 1"         "Content with Caption"
-rename "Nur Titel"          "Blank"
-
-rm -f "$out"
-( cd "$work" && zip -q -r -X "$OLDPWD/$out" . )
-echo "Wrote $out"
-```
-
-Note: the trailing-quote anchor in `<p:cSld name="Zwei Inhalte"` prevents matching `Zwei Inhalte_weiss`; the same holds for `Titelfolie`/`Titelfolie 2` and `Titel und Inhalt`/`Titel und Inhalt_weiss`.
-
-- [ ] **Step 4: Run the test to verify it passes**
-
-Run: `chmod +x scripts/build-reference.sh && scripts/test-reference.sh`
-Expected: `OK: all seven pandoc layout names present`.
-
-- [ ] **Step 5: Confirm the source template is unchanged**
-
-Run: `git status --porcelain orgatex-template.potx`
-Expected: empty output (no modification to the source of truth).
-
-- [ ] **Step 6: Commit**
-
-```bash
-git add scripts/build-reference.sh scripts/test-reference.sh
-git commit -m "Add reference-template build script renaming pandoc layouts"
-```
+Run: `make check`
+Expected: ends with `ALL CHECKS PASSED` (builds the reference, renders the smoke deck with zero layout warnings, confirms branding). If it fails, stop and report — the pre-existing pipeline is broken and must be fixed before adding the deck.
 
 ---
 
-### Task 2: Pandoc defaults, Makefile, gitignore, pipeline smoke test
+### Task 2: Mockup renderer, shared CSS, Makefile wiring, first mockup
 
 **Files:**
-- Create: `pandoc/defaults.yaml`
-- Create: `Makefile`
-- Create: `.gitignore`
-
-**Interfaces:**
-- Consumes: `scripts/build-reference.sh`, `orgatex-reference.potx` (Task 1).
-- Produces: `make reference`, `make mockups`, `make all`, `make clean`; `output/<name>.pptx` rule; `pandoc/defaults.yaml` pinning `reference-doc` and `slide-level: 2`.
-
-- [ ] **Step 1: Write the failing test**
-
-Create `scripts/test-pipeline.sh`:
-
-```bash
-#!/usr/bin/env bash
-# Render a representative throwaway deck and assert pandoc emits no
-# "Couldn't find layout" warning against the generated reference.
-set -euo pipefail
-make reference
-tmp_md="$(mktemp --suffix=.md)"
-tmp_pptx="$(mktemp --suffix=.pptx)"
-trap 'rm -f "$tmp_md" "$tmp_pptx"' EXIT
-cat > "$tmp_md" <<'EOF'
-% Test
-% Autor
-% 2026-06-24
-
-# Abschnitt
-
-## Inhalt
-
-- Punkt eins
-- Punkt zwei
-
-## Zwei Spalten
-
-::: columns
-::: column
-links
-:::
-::: column
-rechts
-:::
-:::
-EOF
-err="$(pandoc --defaults=pandoc/defaults.yaml -o "$tmp_pptx" "$tmp_md" 2>&1 >/dev/null || true)"
-if grep -qi "Couldn't find layout" <<<"$err"; then
-  echo "FAIL: pandoc could not find layouts:" >&2
-  echo "$err" >&2
-  exit 1
-fi
-echo "OK: pandoc found all layouts, no warnings"
-```
-
-- [ ] **Step 2: Run the test to verify it fails**
-
-Run: `chmod +x scripts/test-pipeline.sh && scripts/test-pipeline.sh`
-Expected: FAIL - `make: *** No rule to make target 'reference'` (no Makefile yet).
-
-- [ ] **Step 3: Write `pandoc/defaults.yaml`**
-
-```yaml
-reference-doc: orgatex-reference.potx
-slide-level: 2
-```
-
-- [ ] **Step 4: Write the `.gitignore`**
-
-```gitignore
-orgatex-reference.potx
-output/
-```
-
-- [ ] **Step 5: Write the `Makefile`**
-
-```makefile
-TEMPLATE     := orgatex-template.potx
-REFERENCE    := orgatex-reference.potx
-SRCS         := $(wildcard presentations/*.md)
-DECKS        := $(patsubst presentations/%.md,output/%.pptx,$(SRCS))
-MOCKUPS_HTML := $(wildcard assets/mockups/*.html)
-MOCKUPS_PNG  := $(patsubst %.html,%.png,$(MOCKUPS_HTML))
-
-.PHONY: all reference mockups clean
-all: $(DECKS)
-
-reference: $(REFERENCE)
-$(REFERENCE): $(TEMPLATE) scripts/build-reference.sh
-	scripts/build-reference.sh
-
-mockups: $(MOCKUPS_PNG)
-assets/mockups/%.png: assets/mockups/%.html assets/mockups/mockup.css scripts/build-mockups.sh
-	scripts/build-mockups.sh $<
-
-output:
-	mkdir -p output
-
-output/%.pptx: presentations/%.md pandoc/defaults.yaml $(REFERENCE) $(MOCKUPS_PNG) | output
-	pandoc --defaults=pandoc/defaults.yaml -o $@ $<
-
-clean:
-	rm -f $(REFERENCE) $(DECKS) $(MOCKUPS_PNG)
-```
-
-Note: Makefile recipe lines MUST be indented with a TAB, not spaces.
-
-- [ ] **Step 6: Run the test to verify it passes**
-
-Run: `scripts/test-pipeline.sh`
-Expected: `OK: pandoc found all layouts, no warnings`.
-
-- [ ] **Step 7: Commit**
-
-```bash
-git add pandoc/defaults.yaml Makefile .gitignore scripts/test-pipeline.sh
-git commit -m "Add pandoc defaults, Makefile and pipeline smoke test"
-```
-
----
-
-### Task 3: Mockup rendering infrastructure, shared CSS, first mockup
-
-**Files:**
-- Create: `scripts/build-mockups.sh`
+- Create: `scripts/build-mockups.py`
+- Create: `scripts/test-mockups.sh`
 - Create: `assets/mockups/mockup.css`
 - Create: `assets/mockups/recherche.html`
+- Modify: `Makefile`
 
 **Interfaces:**
-- Consumes: `make mockups` rule (Task 2).
-- Produces: `scripts/build-mockups.sh <file.html>` writes `<file>.png` via headless chromium; `assets/mockups/mockup.css` shared Slack styling; `assets/mockups/recherche.png`.
+- Consumes: existing `Makefile` variable `PYTHON`.
+- Produces: `scripts/build-mockups.py <file.html>` writes `<file>.png`; `make mockups` renders all mockups; `assets/mockups/recherche.png`.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -281,26 +82,70 @@ echo "OK: all mockups rendered"
 - [ ] **Step 2: Run the test to verify it fails**
 
 Run: `chmod +x scripts/test-mockups.sh && scripts/test-mockups.sh`
-Expected: FAIL - `scripts/build-mockups.sh: No such file or directory` (via the make rule).
+Expected: FAIL - `make: *** No rule to make target 'mockups'` (target not added yet).
 
 - [ ] **Step 3: Write the render script**
 
-Create `scripts/build-mockups.sh`:
+Create `scripts/build-mockups.py`:
 
-```bash
-#!/usr/bin/env bash
-# Render one chat-mockup HTML file to a PNG of the same basename.
-set -euo pipefail
-in="$1"
-out="${in%.html}.png"
-chromium --headless=new --no-sandbox --hide-scrollbars \
-  --force-device-scale-factor=2 --window-size=900,1400 \
-  --default-background-color=FFFFFFFF \
-  --screenshot="$out" "file://$(realpath "$in")"
-echo "Wrote $out"
+```python
+#!/usr/bin/env python3
+"""Render one chat-mockup HTML file to a PNG of the same basename.
+
+Usage: build-mockups.py <file.html>
+
+Uses headless Chromium so the chat layout is styled by ordinary CSS and the
+German wording stays editable in the HTML source.
+"""
+import os
+import subprocess
+import sys
+
+
+def main(html):
+    png = os.path.splitext(html)[0] + ".png"
+    subprocess.run([
+        "chromium", "--headless=new", "--no-sandbox", "--hide-scrollbars",
+        "--force-device-scale-factor=2", "--window-size=900,1400",
+        "--default-background-color=FFFFFFFF",
+        f"--screenshot={png}", "file://" + os.path.realpath(html),
+    ], check=True)
+    print("wrote", png)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        sys.exit("usage: build-mockups.py <file.html>")
+    main(sys.argv[1])
 ```
 
-- [ ] **Step 4: Write the shared CSS**
+- [ ] **Step 4: Wire the Makefile**
+
+After the `DECKS := ...` line, add the mockup variables:
+
+```makefile
+MOCKUPS_HTML := $(wildcard assets/mockups/*.html)
+MOCKUPS_PNG  := $(patsubst %.html,%.png,$(MOCKUPS_HTML))
+```
+
+Change the `.PHONY` line to include `mockups`:
+
+```makefile
+.PHONY: all reference check mockups clean
+```
+
+Add this rule after the `reference:` rule block (recipe lines use a TAB):
+
+```makefile
+mockups: $(MOCKUPS_PNG)
+
+assets/mockups/%.png: assets/mockups/%.html assets/mockups/mockup.css scripts/build-mockups.py
+	$(PYTHON) scripts/build-mockups.py $<
+```
+
+Leave the `clean` target unchanged (committed PNGs must survive `make clean`).
+
+- [ ] **Step 5: Write the shared CSS**
 
 Create `assets/mockups/mockup.css`:
 
@@ -329,7 +174,7 @@ body {
 .text + .text { margin-top: 6px; }
 ```
 
-- [ ] **Step 5: Write the first mockup HTML**
+- [ ] **Step 6: Write the first mockup HTML**
 
 Create `assets/mockups/recherche.html`:
 
@@ -358,26 +203,26 @@ Create `assets/mockups/recherche.html`:
 </html>
 ```
 
-- [ ] **Step 6: Run the test to verify it passes**
+- [ ] **Step 7: Run the test to verify it passes**
 
-Run: `chmod +x scripts/build-mockups.sh && scripts/test-mockups.sh`
+Run: `chmod +x scripts/build-mockups.py && scripts/test-mockups.sh`
 Expected: `OK: all mockups rendered`.
 
-- [ ] **Step 7: Eyeball the render**
+- [ ] **Step 8: Eyeball the render**
 
-Run: `xdg-open assets/mockups/recherche.png` (or open it in any viewer).
-Expected: a clean Slack-style two-message exchange with correct umlauts.
+Open `assets/mockups/recherche.png`.
+Expected: a clean Slack-style two-message exchange with correct umlauts, nothing clipped.
 
-- [ ] **Step 8: Commit**
+- [ ] **Step 9: Commit**
 
 ```bash
-git add scripts/build-mockups.sh scripts/test-mockups.sh assets/mockups/mockup.css assets/mockups/recherche.html assets/mockups/recherche.png
-git commit -m "Add mockup render script, shared style and research mockup"
+git add scripts/build-mockups.py scripts/test-mockups.sh assets/mockups/mockup.css assets/mockups/recherche.html assets/mockups/recherche.png Makefile
+git commit -m "Add mockup renderer, shared style and research mockup"
 ```
 
 ---
 
-### Task 4: Remaining three mockups
+### Task 3: Remaining three mockups
 
 **Files:**
 - Create: `assets/mockups/email.html`
@@ -385,7 +230,7 @@ git commit -m "Add mockup render script, shared style and research mockup"
 - Create: `assets/mockups/antwort.html`
 
 **Interfaces:**
-- Consumes: `assets/mockups/mockup.css`, `scripts/build-mockups.sh`, `scripts/test-mockups.sh` (Task 3).
+- Consumes: `assets/mockups/mockup.css`, `scripts/build-mockups.py`, `scripts/test-mockups.sh` (Task 2).
 - Produces: `email.png`, `posteingang.png`, `antwort.png`.
 
 - [ ] **Step 1: Write the "E-Mails entwerfen" mockup**
@@ -509,13 +354,15 @@ git commit -m "Add email, inbox and quick-answer mockups"
 
 ---
 
-### Task 5: Deck markdown, render and branding verification
+### Task 4: Deck source, Makefile dependency, render and verification
 
 **Files:**
 - Create: `presentations/hermes-vertrieb.md`
+- Create: `scripts/test-deck.sh`
+- Modify: `Makefile`
 
 **Interfaces:**
-- Consumes: the full pipeline (Tasks 1-2), all four mockup PNGs (Tasks 3-4).
+- Consumes: the existing pipeline (reference + defaults), all four mockup PNGs (Tasks 2-3).
 - Produces: `output/hermes-vertrieb.pptx`.
 
 - [ ] **Step 1: Write the failing test**
@@ -524,8 +371,8 @@ Create `scripts/test-deck.sh`:
 
 ```bash
 #!/usr/bin/env bash
-# Build the real deck, assert zero layout warnings, ORGATEX fonts/media
-# survive into the output, and LibreOffice can open it.
+# Build the Hermes deck, assert zero layout warnings, that ORGATEX fonts and
+# media survive into the output, and that LibreOffice can open it.
 set -euo pipefail
 err="$(make output/hermes-vertrieb.pptx 2>&1 >/dev/null || true)"
 if grep -qi "Couldn't find layout" <<<"$err"; then
@@ -554,22 +401,19 @@ Expected: FAIL - `make` errors because `presentations/hermes-vertrieb.md` does n
 Create `presentations/hermes-vertrieb.md`:
 
 ```markdown
-% Hermes: Ein KI-Assistent für den Vertrieb
-% ORGATEX
-% 2026-06-24
+---
+title: "Hermes: Ein KI-Assistent für den Vertrieb"
+subtitle: "Weniger Routine, mehr Zeit für den Kunden"
+author: Manoel Brunnen
+date: 2026-06-24
+---
 
-## Weniger Routine, mehr Zeit für den Kunden
-
-# Der Vertriebsalltag heute
-
-## Was kostet uns Zeit?
+## Der Vertriebsalltag heute
 
 - Viel unterwegs, wenig Zeit am Laptop
 - Kundeninfos sind verstreut, Recherche kostet Zeit
 - Der Posteingang läuft über, Antworten warten
 - Die Routine frisst die Zeit, die dem Kunden gehört
-
-# Die Lösung: Hermes
 
 ## Was ist Hermes?
 
@@ -581,86 +425,90 @@ Create `presentations/hermes-vertrieb.md`:
 ## Kundenrecherche vor dem Termin
 
 ::: columns
-::: column
+:::: column
 - Gleich beim Kunden, keine Zeit zur Vorbereitung
 - Hermes liefert die Kurzfassung vorab: Firma, Ansprechpartner, Neuigkeiten
 - Ergebnis: vorbereitet ins Gespräch, mit konkretem Aufhänger
-:::
-::: column
+::::
+:::: column
 ![](assets/mockups/recherche.png)
-:::
+::::
 :::
 
 ## E-Mails entwerfen
 
 ::: columns
-::: column
+:::: column
 - Antwort oder Angebot im eigenen Stil entwerfen lassen
 - Auch vom Handy, in wenigen Sekunden
 - Ihr prüft und sendet, Hermes liefert den ersten Entwurf
-:::
-::: column
+::::
+:::: column
 ![](assets/mockups/email.png)
-:::
+::::
 :::
 
 ## Posteingang-Zusammenfassung
 
 ::: columns
-::: column
+:::: column
 - Tägliche Kurzfassung: was ist wichtig, was kann warten
 - Priorisierung schon vor der Durchsicht
 - Weniger Zeit im Posteingang, kein Verpassen
-:::
-::: column
+::::
+:::: column
 ![](assets/mockups/posteingang.png)
-:::
+::::
 :::
 
 ## Schnelle Antworten unterwegs
 
 ::: columns
-::: column
+:::: column
 - Frage per Messenger oder Sprache, ohne Laptop
 - Belastbare Produktauskunft direkt für den Kunden
 - Antwort im Gespräch, nicht erst nach dem Termin
-:::
-::: column
+::::
+:::: column
 ![](assets/mockups/antwort.png)
-:::
+::::
 :::
 
-# Ihre Daten bleiben im Haus
-
-## Datenresidenz
+## Ihre Daten bleiben im Haus
 
 - Läuft auf einem lokalen Modell auf unserem eigenen Server
 - Kein externer Cloud-Anbieter, Kundendaten verlassen das Unternehmen nicht
 - DSGVO-freundlich, genau dafür haben wir den lokalen KI-Stack gebaut
 
-# Wofür würden SIE es nutzen?
-
-## Eure Sicht zählt
+## Wofür würden SIE es nutzen?
 
 - Welche Aufgaben kosten euch im Alltag am meisten Zeit?
 - Wäre Slack als Kanal für euch okay, oder etwas anderes?
 - Wie organisieren wir die Einrichtung pro Person?
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [ ] **Step 4: Add the deck-to-mockups dependency in the Makefile**
+
+So the deck rebuilds when a mockup changes, add this prerequisite-only line (no recipe — it augments the existing pattern rule) after the `output/%.pptx` rule:
+
+```makefile
+output/hermes-vertrieb.pptx: $(MOCKUPS_PNG)
+```
+
+- [ ] **Step 5: Run the test to verify it passes**
 
 Run: `scripts/test-deck.sh`
 Expected: `OK: deck renders, branding intact, opens in LibreOffice`.
 
-- [ ] **Step 5: Eyeball the deck**
+- [ ] **Step 6: Eyeball the deck**
 
-Convert and open the PDF the test produced, or open `output/hermes-vertrieb.pptx` in PowerPoint/LibreOffice.
-Expected: ORGATEX branding and Mundial typeface; four use-case slides show text left, mockup right; correct umlauts throughout; ~4 MB file size.
+Open the PDF the test produced (or `output/hermes-vertrieb.pptx` in PowerPoint/LibreOffice).
+Expected: ORGATEX branding and Mundial typeface; title slide shows title + subtitle; four use-case slides show text left, mockup right; correct umlauts; ~4 MB file size.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 7: Commit**
 
 ```bash
-git add presentations/hermes-vertrieb.md scripts/test-deck.sh
+git add presentations/hermes-vertrieb.md scripts/test-deck.sh Makefile
 git commit -m "Add Hermes sales-pitch deck source and end-to-end test"
 ```
 
@@ -669,14 +517,14 @@ git commit -m "Add Hermes sales-pitch deck source and end-to-end test"
 ## Self-Review
 
 **Spec coverage:**
-- Narrative Problem -> Lösung -> Vorschlag, 9 slides, layout mapping: Task 5 deck source. ✓
-- Four Slack mockups with verbatim German dialogue and real ORGATEX products: Tasks 3-4. ✓
-- Asset pipeline (`assets/mockups/*.html` + `*.png`, `scripts/build-mockups.sh`, `make mockups`): Tasks 2-3. ✓
-- Reference pipeline dependency (build-reference, defaults, Makefile): Tasks 1-2. ✓
-- Authoring conventions (`slide-level: 2`, `::: columns`, title block): Task 2 defaults, Task 5 deck. ✓
-- Testing/verification (zero layout warnings, branding intact, LibreOffice opens): Tasks 2 and 5. ✓
-- Open items (no multi-tenancy on slide 3 + slide 9; Slack-not-yet-used; Chromium dependency): reflected in deck copy and Global Constraints. ✓
+- Narrative Problem -> Lösung -> Vorschlag, 9 slides (title + 8 content), layout via `slide-level: 2`: Task 4 deck. ✓
+- Four Slack mockups with verbatim German dialogue and real ORGATEX products: Tasks 2-3. ✓
+- Asset pipeline (`assets/mockups/*.{html,png}`, `scripts/build-mockups.py`, `make mockups`): Task 2. ✓
+- Reuses the existing reference pipeline rather than rebuilding it: Pre-existing pipeline section + Task 1 gate. ✓
+- Authoring conventions (`slide-level: 2`, `::::` columns, front-matter title/subtitle, root-relative images): Global Constraints + Task 4. ✓
+- Verification (zero layout warnings, branding intact, LibreOffice opens): Task 4 test. ✓
+- Open items (no multi-tenancy on slides 2-3 and 9; Slack-not-yet-used; Chromium dependency): reflected in deck copy and Global Constraints. ✓
 
 **Placeholder scan:** No TBD/TODO; every code and test step carries complete content.
 
-**Type/name consistency:** Layout names match the Global Constraints mapping across Task 1 script and test; mockup basenames (`recherche`, `email`, `posteingang`, `antwort`) are identical in Tasks 3-4 and the Task 5 image references; image paths are root-relative as required.
+**Type/name consistency:** Mockup basenames (`recherche`, `email`, `posteingang`, `antwort`) are identical across Tasks 2-3 and the Task 4 image references; image paths root-relative; Makefile variable `MOCKUPS_PNG` defined in Task 2 and reused in Task 4.
