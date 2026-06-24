@@ -173,6 +173,20 @@ def render(ref, md):
                 fail("deck has layout parts not registered in the master "
                      f"(PowerPoint will repair): {orphans}")
             print("OK: every deck layout is registered in the master")
+
+            # The deck must embed NO fonts. PowerPoint for the web cannot edit
+            # a presentation that contains embedded fonts and opens it
+            # read-only; the embedded-font binaries also trigger a repair in the
+            # desktop app. Mundial is available in the target environment, so
+            # the deck references it without embedding.
+            with open(os.path.join(chk, "ppt", "presentation.xml"),
+                      encoding="utf-8") as fh:
+                deck_pres = fh.read()
+            font_parts = glob.glob(chk + "/ppt/fonts/*.fntdata")
+            if "embeddedFontLst" in deck_pres or font_parts:
+                fail("deck contains embedded fonts (PowerPoint web opens it "
+                     f"read-only): {len(font_parts)} font parts")
+            print("OK: deck embeds no fonts (editable in PowerPoint web)")
         finally:
             shutil.rmtree(chk, ignore_errors=True)
     finally:
