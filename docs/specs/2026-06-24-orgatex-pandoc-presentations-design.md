@@ -61,9 +61,8 @@ it directly (verified: `--reference-doc=...potx` exits 0). Rendered decks remain
      `<p:cSld name="...">` attribute in the relevant `slideLayoutN.xml` files.
    - **Detach example content from the part graph:** removes `<p:sldIdLst>` and
      `<p:notesMasterIdLst>` from `presentation.xml`; drops the slide / notes /
-     customXml relationships from `presentation.xml.rels`; removes the 17 unused
-     layouts from the slide master (`<p:sldLayoutId>` entries plus their
-     relationships).
+     customXml relationships from `presentation.xml.rels`. All 24 layouts and
+     the slide master are left untouched (see "Why all 24 layouts are kept").
    - **Reachability GC:** keeps only parts reachable from `presentation.xml`
      through the relationship graph; deletes everything else. This is what makes
      the strip robust - it automatically sweeps orphans that directory-by-
@@ -72,9 +71,9 @@ it directly (verified: `--reference-doc=...potx` exits 0). Rendered decks remain
      free).
    - **Prune + re-zip:** drops `[Content_Types].xml` Override entries for deleted
      parts, then re-zips as `orgatex-reference.potx`.
-   - Survivors: master, the 7 kept layouts, `theme1.xml`, the 7 branding media
-     they reference, the 14 embedded Mundial fonts, and presentation
-     properties. Result: ~3.2 MB (from 4.4 MB).
+   - Survivors: master, all 24 layouts, `theme1.xml`, the branding media they
+     reference, the 14 embedded Mundial fonts, and presentation properties.
+     Result: ~3.6 MB (from 4.4 MB).
 2. `Makefile`
    - `make reference` - regenerate `orgatex-reference.potx` from the `.potx`.
    - `make output/<name>.pptx` - render `presentations/<name>.md`.
@@ -114,19 +113,22 @@ The first four are exact placeholder matches and cover the overwhelming majority
 of real slides. The last three are pandoc fall-back layouts rarely triggered by
 ordinary markdown; they are mapped to the closest ORGATEX variant.
 
-Only these seven layouts are kept in the reference; the other 17 (which pandoc
-can never auto-select by name) are dropped. The original German names and the
-full 24-layout set remain in `orgatex-template.potx` for normal PowerPoint use;
-only the generated reference is trimmed and carries the English names.
+Only seven layouts are renamed, but **all 24 layouts are kept** in the
+reference. The original German names and full 24-layout set also remain in
+`orgatex-template.potx` for normal PowerPoint use.
 
-**Pandoc default-layout merge behaviour:** pandoc always injects approximately
-11 of its own unbranded default layouts into every output deck and only
-overrides those whose names match one of the seven names above. A rendered deck
-therefore contains the 7 branded ORGATEX layouts plus pandoc's unbranded
-defaults. Slides routed to one of pandoc's unmapped fallback layouts (e.g.
-"Picture with Caption") will render unbranded, and pandoc emits no warning for
-this. The 7 mappings cover all slide types produced by ordinary markdown; this
-is a known limitation, not a bug.
+**Why all 24 layouts are kept (PowerPoint-repair lesson):** an earlier version
+trimmed the reference to just the 7 renamed layouts. That broke the output:
+pandoc fills any layout slot it expects but cannot find in the reference with
+its own default layout, and it leaves those injected layouts **unregistered in
+the slide master** (`sldLayoutIdLst` and the master's relationships). The result
+is orphan layout parts in the rendered deck, which PowerPoint reports as corrupt
+and silently "repairs". Keeping all 24 ORGATEX layouts, with the master's
+`sldLayoutIdLst` intact, gives pandoc every layout slot it needs from a
+fully consistent master, so it injects nothing and the deck is clean. The
+validator enforces this: it asserts every layout part in the rendered deck is
+registered in the master. Cost of keeping 24 vs 7: about 0.4 MB
+(reference ~3.6 MB instead of ~3.2 MB).
 
 ## Authoring conventions
 
@@ -152,8 +154,10 @@ placeholder deck proves the pipeline before real content exists.
   surviving part has a content type and an inbound reference (no orphans).
 - Unzip an output deck and confirm its slide layouts carry ORGATEX names
   (branding present), not pandoc defaults, and that the embedded Mundial fonts
-  survive (branding intact). Reference ~3.2 MB, deck ~3.2 MB, both dominated by
+  survive (branding intact). Reference ~3.6 MB, deck ~3.6 MB, both dominated by
   the embedded fonts; this is intended.
+- Confirm every layout part in the rendered deck is registered in the slide
+  master (no orphan layouts), so PowerPoint accepts the deck without repairing.
 - Render headless with LibreOffice to confirm the deck opens and displays in
   Mundial.
 
@@ -161,11 +165,13 @@ placeholder deck proves the pipeline before real content exists.
 
 - Standard content layouts (`Titel und Inhalt`, `Zwei Inhalte`) are the
   workhorses; `_weiss` variants are reserved for Comparison.
-- The reference is stripped to the minimum pandoc needs: 7 layouts, master,
-  theme, the branding media those reference, and the embedded fonts. All example
-  content (27 slides, charts, chart-backing Excel, notes, custom XML, the 17
-  unused layouts and their media) is removed via reachability GC. Verified to
-  render with zero warnings and pass the integrity check.
+- The reference keeps all 24 layouts, the master, the theme, the branding media
+  they reference, and the embedded fonts. Only example content (27 slides,
+  charts, chart-backing Excel, notes, custom XML) is removed via reachability GC.
+  Layouts are deliberately NOT trimmed - doing so makes pandoc inject
+  unregistered default layouts that PowerPoint flags as corrupt (see "Why all 24
+  layouts are kept"). Verified to render with zero warnings, pass the integrity
+  check, and produce an orphan-free deck.
 - Embedded Mundial fonts are kept so decks render in the correct typeface on any
   machine (portable). The template's font scheme is Mundial Black (major) /
   Mundial Thin (minor). The stray Calibri is removed as a side effect of the GC
