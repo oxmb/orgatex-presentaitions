@@ -12,7 +12,7 @@
 
 These are already implemented and verified by `make check`; build on them, do not duplicate:
 
-- `scripts/build-reference.py <template> <reference>` — renames the 7 layouts and strips example content via reachability-GC, keeping fonts/media/theme/master.
+- `scripts/build-reference.py <template> <reference>` — renames the 7 layouts pandoc needs, keeps all 24 layouts (avoids a PowerPoint repair prompt), strips example content via reachability-GC, and strips embedded fonts (so the deck stays editable in PowerPoint for the web); the theme, master and branding media survive.
 - `scripts/check-reference.py <reference> <smoke.md>` — OOXML integrity + zero-warning render + branding check.
 - `Makefile` targets: `all`, `reference`, `check`, `clean`; rule `output/%.pptx: presentations/%.md $(REFERENCE) pandoc/defaults.yaml | output`.
 - `pandoc/defaults.yaml`: `reference-doc: orgatex-reference.potx`, `slide-level: 2`.
@@ -371,8 +371,10 @@ Create `scripts/test-deck.sh`:
 
 ```bash
 #!/usr/bin/env bash
-# Build the Hermes deck, assert zero layout warnings, that ORGATEX fonts and
-# media survive into the output, and that LibreOffice can open it.
+# Build the Hermes deck, assert zero layout warnings, that ORGATEX branding
+# media survives into the output, that no fonts are embedded (the pipeline
+# strips them so the deck stays editable in PowerPoint for the web), and that
+# LibreOffice can open it.
 set -euo pipefail
 err="$(make output/hermes-vertrieb.pptx 2>&1 >/dev/null || true)"
 if grep -qi "Couldn't find layout" <<<"$err"; then
@@ -381,14 +383,15 @@ fi
 [ -s output/hermes-vertrieb.pptx ] || { echo "FAIL: no output" >&2; exit 1; }
 work="$(mktemp -d)"; trap 'rm -rf "$work"' EXIT
 unzip -q output/hermes-vertrieb.pptx -d "$work"
-ls "$work/ppt/fonts/"*.fntdata >/dev/null 2>&1 \
-  || { echo "FAIL: no embedded fonts (branding lost)" >&2; exit 1; }
 ls "$work/ppt/media/"* >/dev/null 2>&1 \
   || { echo "FAIL: no media (branding lost)" >&2; exit 1; }
+if ls "$work/ppt/fonts/"*.fntdata >/dev/null 2>&1; then
+  echo "FAIL: deck embeds fonts (must be stripped for web editability)" >&2; exit 1
+fi
 libreoffice --headless --convert-to pdf --outdir "$work" \
   output/hermes-vertrieb.pptx >/dev/null 2>&1
 [ -s "$work/hermes-vertrieb.pdf" ] || { echo "FAIL: LibreOffice cannot open deck" >&2; exit 1; }
-echo "OK: deck renders, branding intact, opens in LibreOffice"
+echo "OK: deck renders, branding intact, no embedded fonts, opens in LibreOffice"
 ```
 
 - [ ] **Step 2: Run the test to verify it fails**
@@ -498,12 +501,12 @@ output/hermes-vertrieb.pptx: $(MOCKUPS_PNG)
 - [ ] **Step 5: Run the test to verify it passes**
 
 Run: `scripts/test-deck.sh`
-Expected: `OK: deck renders, branding intact, opens in LibreOffice`.
+Expected: `OK: deck renders, branding intact, no embedded fonts, opens in LibreOffice`.
 
 - [ ] **Step 6: Eyeball the deck**
 
 Open the PDF the test produced (or `output/hermes-vertrieb.pptx` in PowerPoint/LibreOffice).
-Expected: ORGATEX branding and Mundial typeface; title slide shows title + subtitle; four use-case slides show text left, mockup right; correct umlauts; ~4 MB file size.
+Expected: ORGATEX branding (theme, layouts, media); title slide shows title + subtitle; four use-case slides show text left, mockup right; correct umlauts. The deck is well under 1 MB because fonts are stripped (it renders in Mundial where that font is installed, otherwise a fallback).
 
 - [ ] **Step 7: Commit**
 
