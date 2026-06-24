@@ -207,3 +207,12 @@ placeholder deck proves the pipeline before real content exists.
   Mundial, text falls back to a substitute. Embedding the fonts to make decks
   self-contained is incompatible with editing in PowerPoint for the web, so it
   is intentionally not done.
+- PowerPoint (desktop and web) shows a one-time "repaired" / "we found a problem
+  with some content" prompt when opening these decks. **The deck opens and is
+  fully editable afterwards** - this is accepted as benign and is not a defect to
+  chase further. Evidence: PowerPoint's saved-back copy is byte-identical in part
+  content to ours (only the zip wrapper and PowerPoint's own normalisation, e.g.
+  adding `clrMapOvr`, differ); a plain no-SVG variant triggers the same prompt,
+  so it is not caused by fonts (stripped), layout orphans (fixed), or SVG. It is
+  PowerPoint's standard reaction to OOXML produced by a non-Office tool (pandoc).
+  Do not re-investigate unless the deck becomes non-editable or content is lost.
