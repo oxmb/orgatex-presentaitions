@@ -59,10 +59,10 @@ it directly (verified: `--reference-doc=...potx` exits 0). Rendered decks remain
    - Unzips `orgatex-template.potx` into a working directory.
    - Renames the seven layouts pandoc needs by editing only the
      `<p:cSld name="...">` attribute in the relevant `slideLayoutN.xml` files.
-   - Strips the 27 example slides (`ppt/slides/*`) and their rels, updates
-     `ppt/presentation.xml`, `ppt/_rels/presentation.xml.rels` and
-     `[Content_Types].xml`, and prunes media referenced only by those slides.
    - Re-zips the result as `orgatex-reference.potx`.
+   - Nothing else is touched: media, embedded fonts, master, theme, and the
+     example slides are left intact. Renaming the seven layouts is the entire
+     fix.
 2. `Makefile`
    - `make reference` - regenerate `orgatex-reference.potx` from the `.potx`.
    - `make output/<name>.pptx` - render `presentations/<name>.md`.
@@ -127,21 +127,31 @@ placeholder deck proves the pipeline before real content exists.
   `Couldn't find layout` warnings.
 - Unzip an output deck and confirm its slide layouts carry ORGATEX names
   (branding present), not pandoc defaults.
-- Confirm output size dropped meaningfully from the 4.3 MB template (example
-  media pruned).
-- Render headless with LibreOffice to confirm the deck opens and displays.
+- Confirm the embedded Mundial fonts and ORGATEX media survive into the output
+  (branding intact). Each deck is expected to be ~4 MB, dominated by the
+  embedded fonts; this is intended.
+- Render headless with LibreOffice to confirm the deck opens and displays in
+  Mundial.
 
 ## Decided defaults
 
 - Standard content layouts (`Titel und Inhalt`, `Zwei Inhalte`) are the
   workhorses; `_weiss` variants are reserved for Comparison.
-- Example slides and their slide-only media are stripped from the reference.
+- The transform renames layouts only; nothing is stripped. Investigation showed
+  the 4.3 MB template is ~3.3 MB embedded Mundial fonts and <1 MB media, of
+  which 16/18 files are branding the layouts reference. Only 2 media files are
+  example-only, so stripping buys nothing and risks the design.
+- Embedded Mundial fonts are kept so decks render in the correct typeface on any
+  machine (portable, ~4 MB per deck). The template's font scheme is
+  Mundial Black (major) / Mundial Thin (minor).
 - The generated reference is git-ignored and regenerated via `make reference`;
   the binary is never the source of truth.
 
 ## Risks / open items
 
-- Media pruning is the one fiddly part of the transform. If reliably mapping
-  slide-only media proves brittle, the fallback is to drop the example slides
-  only and accept some residual bloat. Verified during implementation by
-  measuring output size.
+- The template embeds a stray `Calibri` alongside the Mundial family (likely a
+  leftover from one text box). It is harmless and left in place; removing it is
+  optional cleanup, not required.
+- Each deck carries ~3.3 MB of embedded Mundial fonts by design. If lean decks
+  are ever needed, font embedding could be stripped as a separate build variant;
+  out of scope for this work.
