@@ -105,6 +105,20 @@ def integrity(ref):
                 continue
             if rel not in reachable:
                 fail(f"orphan part (no inbound reference): {rel}")
+
+        # 4. all 7 renamed layouts present in the reference
+        expected_layouts = [
+            "Title Slide", "Section Header", "Title and Content",
+            "Two Content", "Comparison", "Content with Caption", "Blank",
+        ]
+        layout_names = ""
+        for f in glob.glob(work + "/ppt/slideLayouts/slideLayout*.xml"):
+            with open(f, encoding="utf-8") as fh:
+                layout_names += fh.read()
+        for name in expected_layouts:
+            if f'cSld name="{name}"' not in layout_names:
+                fail(f"reference missing renamed layout: {name!r}")
+        print("OK: all 7 renamed layouts present")
     finally:
         shutil.rmtree(work, ignore_errors=True)
     print("OK: OOXML integrity")

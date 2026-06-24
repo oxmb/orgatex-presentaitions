@@ -119,6 +119,15 @@ can never auto-select by name) are dropped. The original German names and the
 full 24-layout set remain in `orgatex-template.potx` for normal PowerPoint use;
 only the generated reference is trimmed and carries the English names.
 
+**Pandoc default-layout merge behaviour:** pandoc always injects approximately
+11 of its own unbranded default layouts into every output deck and only
+overrides those whose names match one of the seven names above. A rendered deck
+therefore contains the 7 branded ORGATEX layouts plus pandoc's unbranded
+defaults. Slides routed to one of pandoc's unmapped fallback layouts (e.g.
+"Picture with Caption") will render unbranded, and pandoc emits no warning for
+this. The 7 mappings cover all slide types produced by ordinary markdown; this
+is a known limitation, not a bug.
+
 ## Authoring conventions
 
 - `slide-level: 2`. A level-1 heading (`#`) starts a Section Header slide; a
