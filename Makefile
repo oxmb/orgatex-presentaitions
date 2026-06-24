@@ -23,6 +23,8 @@ assets/mockups/%.png: assets/mockups/%.html assets/mockups/mockup.css scripts/bu
 output/%.pptx: presentations/%.md $(REFERENCE) pandoc/defaults.yaml | output
 	$(PANDOC) --defaults pandoc/defaults.yaml $< -o $@
 
+output/hermes-vertrieb.pptx: $(MOCKUPS_PNG)
+
 output:
 	mkdir -p output
 
