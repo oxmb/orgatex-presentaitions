@@ -20,3 +20,9 @@ body {
 .time { color: #616061; font-size: 12px; }
 .text { font-size: 15px; line-height: 1.46; margin-top: 2px; }
 .text + .text { margin-top: 6px; }
+.quote { border-left: 3px solid #dcdcdc; padding-left: 12px; color: #3a3a3a; margin-top: 4px; }
+.actions { display: flex; gap: 8px; margin-top: 10px; }
+.btn { padding: 7px 16px; border-radius: 4px; font-size: 14px; font-weight: 700; border: 1px solid #d0d0d0; }
+.btn.primary { background: #007a5a; color: #fff; border-color: #007a5a; }
+.btn.ghost { background: #fff; color: #1d1c1d; }
+.sent { color: #007a5a; font-weight: 700; }

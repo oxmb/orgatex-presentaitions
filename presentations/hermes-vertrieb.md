@@ -32,13 +32,13 @@ date: 2026-06-24
 ::::
 :::
 
-## E-Mails entwerfen
+## E-Mails entwerfen und senden
 
 ::: columns
 :::: column
-- Antwort oder Angebot im eigenen Stil entwerfen lassen
-- Auch vom Handy, in wenigen Sekunden
-- Ihr prüft und sendet, Hermes liefert den ersten Entwurf
+- Antwort oder Angebot im eigenen Stil entwerfen lassen, auch vom Handy
+- Per Knopfdruck in Slack freigeben, dann sendet Hermes direkt
+- Nichts geht ungeprüft raus: ihr genehmigt jeden Versand
 ::::
 :::: column
 ![](assets/mockups/email.png)
@@ -68,6 +68,19 @@ date: 2026-06-24
 ::::
 :::: column
 ![](assets/mockups/antwort.png)
+::::
+:::
+
+## Mehrere Schritte auf einmal
+
+::: columns
+:::: column
+- Eine Anweisung, mehrere Schritte: E-Mail senden und Termin eintragen
+- Hermes verkettet Aufgaben über E-Mail und Kalender (Microsoft 365)
+- Eine Freigabe, alles erledigt
+::::
+:::: column
+![](assets/mockups/verkettung.png)
 ::::
 :::
 
