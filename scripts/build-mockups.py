@@ -19,6 +19,13 @@ def main(html):
         "--default-background-color=FFFFFFFF",
         f"--screenshot={png}", "file://" + os.path.realpath(html),
     ], check=True)
+    # The fixed-height viewport leaves a tall white margin below the short
+    # chat. Trim it so the mockup is compact and fills the slide column,
+    # then add a small uniform border for breathing room.
+    subprocess.run(
+        ["convert", png, "-trim", "+repage",
+         "-bordercolor", "white", "-border", "24", png],
+        check=True)
     print("wrote", png)
 
 
