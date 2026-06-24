@@ -52,13 +52,13 @@ Ebene-2-Überschrift (`##`) eine Inhaltsfolie.
 |---|-------|---------------|---------------|
 | 1 | Titel | „Hermes: Ein KI-Assistent für den Vertrieb" / „Weniger Routine, mehr Zeit für den Kunden" | Title Slide |
 | 2 | Problem: Der Vertriebsalltag heute | Viel unterwegs, wenig Zeit am Laptop; Kundeninfos verstreut; Posteingang voll | Title and Content |
-| 3 | Lösung: Was ist Hermes? | Persönlicher KI-Assistent, erreichbar über euren Arbeits-Messenger (z. B. Slack) und E-Mail; merkt sich Kontext und Schreibstil; arbeitet auch offline | Title and Content |
+| 3 | Lösung: Was ist Hermes? | Persönlicher KI-Assistent, erreichbar über euren Arbeits-Messenger (z. B. Slack) und E-Mail; merkt sich Kontext und Schreibstil; arbeitet auch offline; eigene Instanz pro Person (kein gemeinsamer Dienst) | Title and Content |
 | 4 | Kundenrecherche vor dem Termin | Text links, Slack-Mockup rechts | Two Content |
 | 5 | E-Mails entwerfen | Text links, Slack-Mockup rechts | Two Content |
 | 6 | Posteingang-Zusammenfassung | Text links, Slack-Mockup rechts | Two Content |
 | 7 | Schnelle Antworten unterwegs | Text links, Slack-Mockup rechts | Two Content |
 | 8 | Ihre Daten bleiben im Haus | Lokales Modell auf eigenem Server, kein externer Cloud-Anbieter, DSGVO-freundlich; genau dafür wurde der lokale KI-Stack gebaut | Title and Content |
-| 9 | Wofür würden SIE es nutzen? | Offene Diskussion: eure Anwendungsfälle? Wäre Slack als Kanal okay, oder etwas anderes? | Section Header |
+| 9 | Wofür würden SIE es nutzen? | Offene Diskussion: eure Anwendungsfälle? Wäre Slack als Kanal okay, oder etwas anderes? Wie organisieren wir die Einrichtung pro Person? | Section Header |
 
 Eine optionale Trennfolie „Vier Anwendungsfälle" (Section Header) vor Folie 4
 ist möglich, wird aber zugunsten eines knappen Decks weggelassen.
@@ -179,6 +179,12 @@ Zwei-Spalten-Folie nach Pipeline-Konvention:
 
 ## Offene Punkte / Risiken
 
+- **Keine Mandantenfähigkeit.** Es gibt keinen gemeinsamen Hermes-Dienst; jede
+  Person braucht eine eigene Instanz und installiert/betreibt sie selbst. Das
+  Deck spricht das offen an (Folie 3 als „eigene Instanz pro Person", Folie 9 als
+  Frage „wie organisieren wir die Einrichtung?"). Wo die Instanzen laufen
+  (zentral auf dem Stack-Host vs. pro Person) und wieviel Hilfestellung
+  nicht-technische Nutzer brauchen, ist vor einem Rollout zu klären.
 - **Slack ist noch nicht im Einsatz.** Das Deck schlägt Slack als Kanal vor; die
   tatsächliche Einführung ist Teil der Diskussion (Folie 9) und vor einer Zusage
   zu klären.
