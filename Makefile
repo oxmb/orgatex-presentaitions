@@ -25,6 +25,14 @@ output/%.pptx: presentations/%.md $(REFERENCE) pandoc/defaults.yaml | output
 
 output/hermes-vertrieb.pptx: $(MOCKUPS_PNG)
 
+output/fw-split-vertrieb.pptx: assets/mockups/ota-dashboard.png assets/mockups/feature-flags.png
+
+assets/mockups/ota-dashboard.png: assets/mockups/ota-dashboard.html assets/mockups/tb-mockup.css scripts/build-mockups.py
+	$(PYTHON) scripts/build-mockups.py $<
+
+assets/mockups/feature-flags.png: assets/mockups/feature-flags.html assets/mockups/tb-mockup.css scripts/build-mockups.py
+	$(PYTHON) scripts/build-mockups.py $<
+
 output:
 	mkdir -p output
 
