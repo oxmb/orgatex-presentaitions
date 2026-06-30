@@ -22,8 +22,9 @@ date: 2026-07-01
 
 - Zwei unabhängige Firmware-Produkte: ox-label und ox-button
 - Je ein eigenes ThingsBoard Device Profile mit eigenem OTA-Kanal
-- Gerät erhält beim Onboarding das produktspezifische Firmware-Image via OTA
-- Upgrade Button auf Label: neues OTA-Image erforderlich
+- Produktwechsel immer über OTA: Gerät wechselt zwischen Button- und Label-Firmware per OTA-Update
+- Beim Onboarding: OTA installiert das gekaufte Produkt (Button- oder Label-Firmware)
+- Upgrade Button auf Label: erneutes OTA auf Label-Firmware erforderlich
 - Jede Firmware enthält nur die eigenen Features (kein ungenutzter Code der anderen Produktlinie)
 
 ## Szenario A: OTA-Flow
@@ -32,8 +33,8 @@ date: 2026-07-01
 :::: column
 - Kunde kauft OX-Label oder OX-Button
 - Onboarding: Claiming über ThingsBoard
-- OTA-Dashboard zeigt verfügbares Firmware-Update an
-- Gerät lädt Firmware beim nächsten OTA-Intervall
+- OTA-Dashboard: Button- oder Label-Firmware auswählen und starten
+- Gerät lädt und wechselt Firmware beim nächsten OTA-Intervall
 - Sofortige Aktualisierung: Gerät 10 Sekunden lang gedrückt halten
 ::::
 :::: column
@@ -62,7 +63,7 @@ date: 2026-07-01
 |---|---|---|
 | Wartungsaufwand | Zwei separate Produkte zu pflegen | Ein Codebase, aber Flag-Komplexität |
 | Flexibilität | Kein spontaner Upgrade ohne OTA | Flag-Wechsel reicht für Upgrade |
-| Kundenerfahrung | OTA beim Onboarding nötig | Kein OTA-Schritt beim Onboarding |
+| Kundenerfahrung | Produktwechsel immer via OTA (Onboarding und Upgrade) | Kein OTA-Schritt beim Onboarding oder Upgrade |
 | Time-to-Market | Besser: Fokus auf wichtigere FW, keine Projektabhängigkeiten | Schlechter: jede Änderung muss beide Use Cases berücksichtigen |
 
 ## Zur Entscheidung
