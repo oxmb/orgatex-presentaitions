@@ -32,13 +32,13 @@ import tempfile
 import zipfile
 
 RENAMES = {
-    "slideLayout1.xml":  ("Titelfolie",         "Title Slide"),
-    "slideLayout3.xml":  ("Kapitel 1",          "Section Header"),
-    "slideLayout8.xml":  ("Titel und Inhalt",   "Title and Content"),
-    "slideLayout10.xml": ("Zwei Inhalte",       "Two Content"),
-    "slideLayout12.xml": ("Zwei Inhalte_weiss", "Comparison"),
-    "slideLayout13.xml": ("Diagramm 1",         "Content with Caption"),
-    "slideLayout16.xml": ("Nur Titel",          "Blank"),
+    "slideLayout1.xml":  ("Titelfolie",          "Title Slide"),
+    "slideLayout4.xml":  ("Kapitel 2",           "Section Header"),
+    "slideLayout11.xml": ("Titel und Inhalt_weiss", "Title and Content"),
+    "slideLayout12.xml": ("Zwei Inhalte_weiss",  "Two Content"),
+    "slideLayout10.xml": ("Zwei Inhalte",        "Comparison"),
+    "slideLayout13.xml": ("Diagramm 1",          "Content with Caption"),
+    "slideLayout16.xml": ("Nur Titel",           "Blank"),
 }
 
 
