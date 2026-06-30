@@ -4,12 +4,14 @@ TEMPLATE  := orgatex-template.potx
 REFERENCE := orgatex-reference.potx
 SOURCES   := $(wildcard presentations/*.md)
 DECKS     := $(patsubst presentations/%.md,output/%.pptx,$(SOURCES))
+PDFS      := $(patsubst presentations/%.md,output/%.pdf,$(SOURCES))
 MOCKUPS_HTML := $(wildcard assets/mockups/*.html)
 MOCKUPS_PNG  := $(patsubst %.html,%.png,$(MOCKUPS_HTML))
 DEPLOY_DIR := $(HOME)/OneDrive/Präsentationen
 
-.PHONY: all reference check mockups clean deploy
+.PHONY: all pdf reference check mockups clean deploy
 all: $(DECKS)
+pdf: $(PDFS)
 
 reference: $(REFERENCE)
 
@@ -27,9 +29,15 @@ output/layout-demo.pptx: presentations/layout-demo.md $(REFERENCE) pandoc/defaul
 output/%.pptx: presentations/%.md $(REFERENCE) pandoc/defaults.yaml | output
 	$(PANDOC) --defaults pandoc/defaults.yaml $< -o $@
 
-output/hermes-vertrieb.pptx: $(MOCKUPS_PNG)
+BEAMER_DEPS := pandoc/defaults-beamer.yaml pandoc/beamerthemeOrgatex.sty \
+               assets/logo-wide.pdf assets/logo-mark.pdf
 
-output/fw-split-vertrieb.pptx: assets/mockups/ota-dashboard.png assets/mockups/feature-flags.png
+output/%.pdf: presentations/%.md $(BEAMER_DEPS) | output
+	TEXINPUTS=pandoc//:$(TEXINPUTS) $(PANDOC) --defaults pandoc/defaults-beamer.yaml $< -o $@
+
+output/hermes-vertrieb.pptx output/hermes-vertrieb.pdf: $(MOCKUPS_PNG) assets/mockups/architektur.svg
+
+output/fw-split-vertrieb.pptx output/fw-split-vertrieb.pdf: assets/mockups/ota-dashboard.png assets/mockups/feature-flags.png
 
 assets/mockups/ota-dashboard.png: assets/mockups/ota-dashboard.html assets/mockups/tb-mockup.css scripts/build-mockups.py
 	$(PYTHON) scripts/build-mockups.py $<

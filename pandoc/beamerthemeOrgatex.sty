@@ -1,0 +1,100 @@
+\mode<presentation>
+
+\RequirePackage{fontspec}
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{tikz}
+
+% Brand colours
+\definecolor{oxYellow}{HTML}{FFD500}
+\definecolor{oxGray}{HTML}{70706C}
+\definecolor{oxCream}{HTML}{F5F0E6}
+\definecolor{oxOrange}{HTML}{E6500F}
+\definecolor{oxBlue}{HTML}{009ED5}
+
+% Fonts – Mundial via fontspec; \bfseries maps to Mundial Black
+\usefonttheme{professionalfonts}
+\setsansfont[
+  BoldFont        = Mundial Black,
+  ItalicFont      = Mundial Italic,
+  BoldItalicFont  = Mundial Black Italic,
+  FontFace        = {l}{n}{Font = Mundial Thin},
+]{Mundial}
+\setbeamerfont{title}      {size=\LARGE, series=\bfseries}
+\setbeamerfont{subtitle}   {size=\large, series=\fontseries{l}\selectfont}
+\setbeamerfont{frametitle} {size=\large, series=\bfseries}
+\setbeamerfont{author}     {size=\normalsize}
+\setbeamerfont{date}       {size=\normalsize}
+\setbeamerfont{footline}   {size=\tiny}
+
+% Beamer colours
+\setbeamercolor{normal text}   {fg=black,        bg=white}
+\setbeamercolor{structure}     {fg=black}
+\setbeamercolor{title}         {fg=black,        bg=white}
+\setbeamercolor{frametitle}    {fg=black,        bg=white}
+\setbeamercolor{subtitle}      {fg=oxGray}
+\setbeamercolor{author}        {fg=oxGray}
+\setbeamercolor{date}          {fg=oxGray}
+\setbeamercolor{footline}      {fg=oxGray,       bg=white}
+\setbeamercolor{itemize item}  {fg=oxYellow}
+\setbeamercolor{itemize subitem}{fg=oxGray}
+\setbeamercolor{block title}   {fg=black,        bg=oxCream}
+\setbeamercolor{block body}    {fg=black,        bg=oxCream}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize item}  {\hbox{\vrule width 0.7ex height 0.7ex depth 0pt}}
+\setbeamertemplate{itemize subitem}{\textcolor{oxGray}{\hbox{\vrule width 0.5ex height 0.5ex depth 0pt}}}
+
+% Title page: yellow top bar, logo, title/subtitle/author below
+\setbeamertemplate{title page}{%
+  \begin{tikzpicture}[overlay, remember picture]
+    \fill[oxYellow]
+      (current page.north west) rectangle
+      ([yshift=-1.8cm]current page.north east);
+    \node[anchor=west] at ([xshift=0.6cm, yshift=-0.9cm]current page.north west) {%
+      \includegraphics[height=0.9cm]{assets/logo-wide}%
+    };
+  \end{tikzpicture}
+  \vspace{1.9cm}
+  \vfill
+  \begin{beamercolorbox}[leftskip=0.6cm, sep=0pt]{title}
+    \usebeamerfont{title}\inserttitle\par
+    \smallskip
+    {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle}\par
+  \end{beamercolorbox}
+  \vspace{0.6cm}
+  \begin{beamercolorbox}[leftskip=0.6cm, sep=0pt]{author}
+    \usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor\par
+    \smallskip
+    \usebeamerfont{date}\usebeamercolor[fg]{date}\insertdate\par
+  \end{beamercolorbox}
+  \vfill
+}
+
+% Frame title: thin yellow left bar, title text
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth, ht=1.1cm, dp=0cm]{frametitle}
+    \begin{tikzpicture}[overlay, remember picture]
+      \fill[oxYellow] (0, 0.05) rectangle (0.35cm, -1.05cm);
+    \end{tikzpicture}
+    \hspace{0.6cm}\vbox to 1.1cm{\vfil\usebeamerfont{frametitle}\insertframetitle\vfil}
+  \end{beamercolorbox}
+}
+
+% Reduce default top margin of frame body
+\addtobeamertemplate{frametitle}{}{\vspace{-0.3cm}}
+
+% Footer: logo left, page number right
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth, ht=0.5cm, dp=0.2cm]{footline}
+    \hspace{0.5cm}
+    \includegraphics[height=0.3cm]{assets/logo-wide}%
+    \hfill
+    \usebeamerfont{footline}\usebeamercolor[fg]{footline}%
+    \insertframenumber\,/\,\inserttotalframenumber
+    \hspace{0.5cm}
+  \end{beamercolorbox}%
+}
+
+\mode<all>
