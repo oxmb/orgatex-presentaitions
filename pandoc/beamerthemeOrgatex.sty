@@ -1,9 +1,19 @@
 \mode<presentation>
 
 \RequirePackage{fontspec}
+\RequirePackage{newunicodechar}
 \RequirePackage{xcolor}
 \RequirePackage{graphicx}
 \RequirePackage{tikz}
+
+% Unicode characters missing from Mundial
+\newunicodechar{→}{\ensuremath{\rightarrow}}
+\newunicodechar{←}{\ensuremath{\leftarrow}}
+\newunicodechar{↑}{\ensuremath{\uparrow}}
+\newunicodechar{↓}{\ensuremath{\downarrow}}
+\newunicodechar{⇒}{\ensuremath{\Rightarrow}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{≤}{\ensuremath{\leq}}
 
 % Brand colours
 \definecolor{oxYellow}{HTML}{FFD500}
