@@ -36,7 +36,7 @@ RENAMES = {
     "slideLayout4.xml":  ("Kapitel 2",           "Section Header"),
     "slideLayout11.xml": ("Titel und Inhalt_weiss", "Title and Content"),
     "slideLayout12.xml": ("Zwei Inhalte_weiss",  "Two Content"),
-    "slideLayout10.xml": ("Zwei Inhalte",        "Comparison"),
+    "slideLayout14.xml": ("2_Diagramm 1",        "Comparison"),
     "slideLayout13.xml": ("Diagramm 1",          "Content with Caption"),
     "slideLayout16.xml": ("Nur Titel",           "Blank"),
 }

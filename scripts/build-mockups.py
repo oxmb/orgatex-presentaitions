@@ -15,7 +15,7 @@ def main(html):
     png = os.path.splitext(html)[0] + ".png"
     subprocess.run([
         "chromium", "--headless=new", "--no-sandbox", "--hide-scrollbars",
-        "--force-device-scale-factor=2", "--window-size=900,1400",
+        "--force-device-scale-factor=2", "--window-size=1200,1400",
         "--default-background-color=FFFFFFFF",
         f"--screenshot={png}", "file://" + os.path.realpath(html),
     ], check=True)

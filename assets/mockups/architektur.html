@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="de">
+<head><meta charset="utf-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+  background: #fff;
+  width: 1200px;
+  padding: 28px 36px 22px;
+  color: #1d1d1d;
+}
+
+/* ── layout helpers ── */
+.row   { display: flex; align-items: flex-start; gap: 0; }
+.col   { display: flex; flex-direction: column; align-items: stretch; }
+
+/* ── zones ── */
+.zone {
+  border-radius: 12px;
+  padding: 22px 22px 28px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.zone-lbl {
+  font-size: 20px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: #888; text-align: center; margin-bottom: 2px;
+}
+.z-firm { background: #f4f6fa; border: 2px solid #c8d4ea; }
+.z-dmz  { background: #fef8e8; border: 2px solid #eabb30; }
+.z-int  { background: #edf6f0; border: 2px solid #78ba8a; }
+
+/* ── boxes ── */
+.box {
+  border-radius: 8px; padding: 18px 20px; text-align: center;
+}
+.t  { font-size: 26px; font-weight: 700; }
+.s  { font-size: 20px; margin-top: 5px; }
+
+.b-ch  { background: #e8eeff; border: 2px solid #5a70cc; }
+.b-ch .t { color: #253890; }
+.b-ch .s { color: #5a68aa; }
+
+.b-ag  { background: #1a3a6b; border: 2px solid #1a3a6b; padding: 22px 24px; }
+.b-ag .t { color: #fff; font-size: 30px; }
+.b-ag .s { color: #a8c0e8; font-size: 20px; }
+
+.b-llm { background: #fff8e0; border: 2px solid #eabb30; }
+.b-llm .t { color: #7a5800; }
+.b-llm .s { color: #a07820; }
+
+/* ── arrows ── */
+.ah { display: flex; align-items: center; padding: 0 8px; flex-shrink: 0; align-self: center; }
+.ah-line {
+  width: 48px; height: 3px; background: #b0bfda; position: relative;
+}
+.ah-line::after {
+  content: ''; position: absolute; right: -1px; top: -5px;
+  border-left: 12px solid #b0bfda;
+  border-top: 7px solid transparent; border-bottom: 7px solid transparent;
+}
+
+.av { width: 3px; height: 32px; background: #b0bfda; margin: 0 auto; position: relative; }
+.av::after {
+  content: ''; position: absolute; bottom: -1px; left: -5px;
+  border-top: 12px solid #b0bfda;
+  border-left: 7px solid transparent; border-right: 7px solid transparent;
+}
+
+/* ── sources ── */
+.src-lbl {
+  font-size: 20px; font-weight: 700; letter-spacing: 0.7px;
+  text-transform: uppercase; color: #3a7a50; text-align: center; margin-bottom: 10px;
+}
+.src-row { display: flex; gap: 12px; }
+.src {
+  background: #eaf4ee; border: 2px solid #78ba8a;
+  border-radius: 8px; padding: 14px 16px; text-align: center; flex: 1;
+}
+.src .t { font-size: 24px; font-weight: 700; color: #1a5c30; }
+.src .s { font-size: 18px; color: #3a7a50; margin-top: 4px; }
+.src.more { background: #f5f5f5; border-color: #ccc; flex: 0 0 64px; }
+.src.more .t { color: #aaa; font-size: 32px; letter-spacing: 3px; line-height: 1.2; }
+
+/* ── domain badge ── */
+.domain {
+  font-size: 18px; color: #8a6800; background: #fff3c0;
+  border: 1.5px solid #eabb30; border-radius: 6px;
+  padding: 5px 12px; text-align: center; margin-top: 6px;
+  font-family: "Consolas", monospace;
+}
+
+.footer {
+  margin-top: 24px; text-align: center; font-size: 20px; color: #888;
+  border-top: 1px solid #e8e8e8; padding-top: 18px;
+}
+.footer strong { color: #444; }
+</style>
+</head>
+<body>
+
+<div class="row">
+
+  <!-- Firmennetz: Eingangskanäle -->
+  <div class="zone z-firm" style="flex:1">
+    <div class="zone-lbl">Firmennetz</div>
+    <div class="box b-ch"><div class="t">Teams</div><div class="s">Bot-Integration</div></div>
+    <div class="box b-ch"><div class="t">E-Mail</div><div class="s">Outlook</div></div>
+  </div>
+
+  <div class="ah"><div class="ah-line"></div></div>
+
+  <!-- DMZ: Agent + LLM -->
+  <div class="col" style="flex:1.4; gap:8px">
+    <div class="zone z-dmz">
+      <div class="zone-lbl">DMZ &mdash; pro Benutzer</div>
+      <div class="box b-ag">
+        <div class="t">Hermes Agent</div>
+        <div class="s">Kontext &middot; Planung &middot; Ausfuhrung</div>
+      </div>
+      <div class="domain">*.ai.orgatex.de</div>
+    </div>
+
+    <div class="ah" style="justify-content:center; padding:0">
+      <div class="av"></div>
+    </div>
+
+    <!-- Datenquellen unter dem Agent -->
+    <div>
+      <div class="src-lbl">Datenquellen</div>
+      <div class="src-row">
+        <div class="src"><div class="t">Outlook</div><div class="s">E-Mail</div></div>
+        <div class="src"><div class="t">Kalender</div><div class="s">M365</div></div>
+        <div class="src"><div class="t">CRM</div><div class="s">Kundendaten</div></div>
+        <div class="src"><div class="t">Web</div><div class="s">Recherche</div></div>
+        <div class="src more"><div class="t">...</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ah"><div class="ah-line"></div></div>
+
+  <!-- Internes Netz: LLM-Server -->
+  <div class="zone z-int" style="flex:0.9">
+    <div class="zone-lbl">Internes Netz</div>
+    <div class="box b-llm">
+      <div class="t">LLM-Server</div>
+      <div class="s">Ollama &middot; srv-mac-01</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <strong>Alle Daten bleiben im internen Netz</strong> &mdash; kein externer KI-Dienst, kein Datentransfer nach aussen
+</div>
+
+</body>
+</html>

@@ -14,10 +14,53 @@ date: 2026-06-24
 
 ## Was ist Hermes?
 
-- Ein persönlicher KI-Assistent, erreichbar über euren Arbeits-Messenger (z. B. Slack) und E-Mail
+- Ein persönlicher KI-Assistent, erreichbar über euren Arbeits-Messenger (z. B. Microsoft Teams) und E-Mail
 - Merkt sich Kontext und euren Schreibstil
 - Arbeitet auch, während ihr offline seid
 - Eigene Instanz pro Person, kein gemeinsamer Dienst
+
+## Technischer Aufbau
+
+![](assets/mockups/architektur.svg)
+
+## Morgen-Briefing
+
+::: columns
+:::: column
+- Täglich um 7:45 Uhr: alle offenen E-Mails, Jira-Tickets und HubSpot-Leads auf einen Blick
+- Hermes priorisiert automatisch nach Dringlichkeit
+- Direkt aus dem Briefing heraus weiterarbeiten
+::::
+:::: column
+![](assets/mockups/briefing.png)
+::::
+:::
+
+## Teams-Kanäle im Griff
+
+::: columns
+:::: column
+- Verpasste Nachrichten in langen Kanälen zusammenfassen lassen
+- Offene Punkte und Entscheidungen werden hervorgehoben
+- Direkt aus der Zusammenfassung heraus antworten oder delegieren
+::::
+:::: column
+![](assets/mockups/teams-digest.png)
+::::
+:::
+
+## Unterwegs per Sprache
+
+::: columns
+:::: column
+- Sprachnachrichten über Teams — auch per Apple CarPlay im Auto
+- Vor dem Termin: Kundenkontext abrufen ohne Laptop
+- Nach dem Termin: CRM-Eintrag und Erinnerung per Sprachbefehl
+::::
+:::: column
+![](assets/mockups/voice.png)
+::::
+:::
 
 ## Kundenrecherche vor dem Termin
 
@@ -37,7 +80,7 @@ date: 2026-06-24
 ::: columns
 :::: column
 - Antwort oder Angebot im eigenen Stil entwerfen lassen, auch vom Handy
-- Per Knopfdruck in Slack freigeben, dann sendet Hermes direkt
+- Per Knopfdruck in Teams freigeben, dann sendet Hermes direkt
 - Nichts geht ungeprüft raus: ihr genehmigt jeden Versand
 ::::
 :::: column
@@ -84,14 +127,14 @@ date: 2026-06-24
 ::::
 :::
 
-## Ihre Daten bleiben im Haus
+## Eure Daten bleiben im Haus
 
 - Läuft auf einem lokalen Modell auf unserem eigenen Server
 - Kein externer Cloud-Anbieter, Kundendaten verlassen das Unternehmen nicht
 - DSGVO-freundlich, genau dafür haben wir den lokalen KI-Stack gebaut
 
-## Wofür würden SIE es nutzen?
+## Wofür würdet ihr es nutzen?
 
 - Welche Aufgaben kosten euch im Alltag am meisten Zeit?
-- Wäre Slack als Kanal für euch okay, oder etwas anderes?
+- Wäre Teams als Kanal für euch okay, oder etwas anderes?
 - Wie organisieren wir die Einrichtung pro Person?
