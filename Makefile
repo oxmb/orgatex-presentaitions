@@ -6,8 +6,9 @@ SOURCES   := $(wildcard presentations/*.md)
 DECKS     := $(patsubst presentations/%.md,output/%.pptx,$(SOURCES))
 MOCKUPS_HTML := $(wildcard assets/mockups/*.html)
 MOCKUPS_PNG  := $(patsubst %.html,%.png,$(MOCKUPS_HTML))
+DEPLOY_DIR := $(HOME)/OneDrive/Präsentationen
 
-.PHONY: all reference check mockups clean
+.PHONY: all reference check mockups clean deploy
 all: $(DECKS)
 
 reference: $(REFERENCE)
@@ -19,6 +20,9 @@ mockups: $(MOCKUPS_PNG)
 
 assets/mockups/%.png: assets/mockups/%.html assets/mockups/mockup.css scripts/build-mockups.py
 	$(PYTHON) scripts/build-mockups.py $<
+
+output/layout-demo.pptx: presentations/layout-demo.md $(REFERENCE) pandoc/defaults.yaml scripts/build-layout-demo.py | output
+	$(PYTHON) scripts/build-layout-demo.py
 
 output/%.pptx: presentations/%.md $(REFERENCE) pandoc/defaults.yaml | output
 	$(PANDOC) --defaults pandoc/defaults.yaml $< -o $@
@@ -38,6 +42,9 @@ output:
 
 check: $(REFERENCE)
 	$(PYTHON) scripts/check-reference.py $(REFERENCE) presentations/smoke-test.md
+
+deploy: $(DECKS)
+	cp $(DECKS) $(DEPLOY_DIR)/
 
 clean:
 	rm -rf output $(REFERENCE)
