@@ -12,9 +12,16 @@ date: 2026-07-01
 - Aktuell: eine gemeinsame Firmware mit Feature-Flags für beide Produkte
 - Frage: Weiter so, oder sauber trennen?
 
-## Was braucht welches Produkt?
+## Welche Modi sind möglich?
 
-![](assets/mockups/produkt-matrix.png)
+| Produkt | API-Modus | Button-Modus | Umschaltbar |
+|---|:---:|:---:|:---:|
+| **OX-Label** | ✓ | ✓ | ✓ |
+| **OX-Button** | ✗ | ✓ | ✗ |
+
+- Gleiche Hardware, pro Produkt sind unterschiedliche Modi freigeschaltet
+- **OX-Label**: beide Modi möglich, per Konfiguration umschaltbar, das flexible Produkt
+- **OX-Button**: nur Button-Modus, weniger Funktionen, das günstigere Produkt
 
 ## Szenario A: Kombinierte Firmware
 
