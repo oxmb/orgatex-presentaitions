@@ -78,7 +78,7 @@ date: 2026-07-01
 - **Szenario A wählen wenn:** Der einfache Upgrade-Pfad **OX-Button** auf **OX-Label** ohne OTA zählt am meisten
 - **Szenario B wählen wenn:** Entwicklungsfokus und saubere Trennung der Produkte zählen am meisten
 
-## Vorläufige Entscheidungen
+## Entscheidungen
 
 - **Entschieden:**
     - Eine gemeinsame Firmware für **OX-Label** und **OX-Button** (Szenario A)
@@ -87,5 +87,4 @@ date: 2026-07-01
     - **OX-Button** und **OX-Label** müssen als getrennte Produkte vermarktet werden
     - Getrennte Namen und eigene Seriennummer-Präfixe (**OX1** und **OX2**)
     - Direkt als **OX-Button** oder **OX-Label** beim Fertiger bestellen (kein Umetikettieren)
-- **Offen:** Soll **OX-Label** den Button-Modus überhaupt unterstützen?
 - **Handlungsbedarf:** Auch im **API-Modus** muss ein Button-Druck einen Webhook auslösen (konfigurierbar)
