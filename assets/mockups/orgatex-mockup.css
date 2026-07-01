@@ -48,6 +48,8 @@ tbody td { padding: 11px 20px; color: #1d1d1b; }
 }
 .badge-ok { background: #e8f5e9; color: #2e7d32; }
 .badge-update { background: #ffd500; color: #1d1d1b; }
+.yes { color: #2e7d32; font-weight: 700; font-size: 18px; }
+.no { color: #e6500f; font-weight: 700; font-size: 18px; }
 .fw-section {
   padding: 16px 20px;
   border-top: 2px solid #ffd500;

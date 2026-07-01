@@ -40,9 +40,12 @@ output/%.pdf: presentations/%.md $(BEAMER_DEPS) | output
 
 output/hermes-vertrieb.pptx output/hermes-vertrieb.pdf: $(MOCKUPS_PNG) assets/mockups/architektur.svg
 
-output/fw-split-vertrieb.pptx output/fw-split-vertrieb.pdf: assets/mockups/ota-dashboard.png assets/mockups/feature-flags.png
+output/fw-split-vertrieb.pptx output/fw-split-vertrieb.pdf: assets/mockups/ota-dashboard.png assets/mockups/feature-flags.png assets/mockups/produkt-matrix.png
 
 assets/mockups/ota-dashboard.png: assets/mockups/ota-dashboard.html assets/mockups/orgatex-mockup.css scripts/build-mockups.py
+	$(PYTHON) scripts/build-mockups.py $<
+
+assets/mockups/produkt-matrix.png: assets/mockups/produkt-matrix.html assets/mockups/orgatex-mockup.css scripts/build-mockups.py
 	$(PYTHON) scripts/build-mockups.py $<
 
 assets/mockups/feature-flags.png: assets/mockups/feature-flags.html assets/mockups/orgatex-mockup.css scripts/build-mockups.py

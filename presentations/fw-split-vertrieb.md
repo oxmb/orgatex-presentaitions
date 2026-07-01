@@ -14,12 +14,7 @@ date: 2026-07-01
 
 ## Was braucht welches Produkt?
 
-| Produkt | API-Zugriff | Button-Flow |
-|---|---|---|
-| **OX-Label** | ✓ | ✗ |
-| **OX-Button** | ✗ | ✓ |
-
-: Genau ein Flag ist aktiv, nie beide. **OX-Label** kann per Flag umschalten, **OX-Button** bleibt fest auf Button.
+![](assets/mockups/produkt-matrix.png)
 
 ## Szenario A: Kombinierte Firmware
 
