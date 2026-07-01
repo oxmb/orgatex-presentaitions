@@ -2,40 +2,54 @@
 <html lang="de">
 <head><meta charset="utf-8"><link rel="stylesheet" href="orgatex-mockup.css"></head>
 <body>
-  <div class="mockup-caption">OX-Label: API-Modus</div>
+  <div class="mockup-caption">OX-Label: Modus umschaltbar</div>
   <div class="ox-card">
-    <div class="ox-card-header">Server-Attribute - OX-Label-0051</div>
-    <div class="attr-row">
-      <div class="attr-key">Produkt</div>
-      <div class="attr-val"><span class="product-tag">OX-Label</span></div>
+    <div class="ox-card-header">Modus wählen - OX-Label-0051</div>
+    <div class="mode-list">
+      <div class="mode-item active">
+        <span class="mode-radio"></span>
+        <div class="mode-body">
+          <div class="mode-title">API-Modus</div>
+          <div class="mode-sub">Inhalt kommt vom Server</div>
+        </div>
+        <span class="mode-state">aktiv</span>
+      </div>
+      <div class="mode-item">
+        <span class="mode-radio"></span>
+        <div class="mode-body">
+          <div class="mode-title">Button-Modus</div>
+          <div class="mode-sub">verfügbar, per Konfiguration wählbar</div>
+        </div>
+      </div>
     </div>
-    <div class="attr-row">
-      <div class="attr-key">API-Zugriff</div>
-      <div class="attr-val true">true</div>
-    </div>
-    <div class="attr-row">
-      <div class="attr-key">Button-Flow</div>
-      <div class="attr-val false">false</div>
+    <div class="ox-footer">
+      Genau ein Modus aktiv. OX-Label wechselt per Konfiguration zwischen API und Button.
     </div>
   </div>
 
-  <div class="mockup-caption">OX-Button: Button-Modus</div>
+  <div class="mockup-caption">OX-Button: nur Button-Modus</div>
   <div class="ox-card">
-    <div class="ox-card-header">Server-Attribute - OX-Button-0003</div>
-    <div class="attr-row">
-      <div class="attr-key">Produkt</div>
-      <div class="attr-val"><span class="product-tag">OX-Button</span></div>
-    </div>
-    <div class="attr-row">
-      <div class="attr-key">API-Zugriff</div>
-      <div class="attr-val false">false</div>
-    </div>
-    <div class="attr-row">
-      <div class="attr-key">Button-Flow</div>
-      <div class="attr-val true">true</div>
+    <div class="ox-card-header">Modus wählen - OX-Button-0003</div>
+    <div class="mode-list">
+      <div class="mode-item locked">
+        <span class="mode-x">&#10007;</span>
+        <div class="mode-body">
+          <div class="mode-title">API-Modus</div>
+          <div class="mode-sub">von OX-Button nicht unterstützt</div>
+        </div>
+        <span class="mode-state locked-state">gesperrt</span>
+      </div>
+      <div class="mode-item active">
+        <span class="mode-radio"></span>
+        <div class="mode-body">
+          <div class="mode-title">Button-Modus</div>
+          <div class="mode-sub">fest eingestellt</div>
+        </div>
+        <span class="mode-state">aktiv</span>
+      </div>
     </div>
     <div class="ox-footer">
-      Immer nur ein Modus aktiv. OX-Label wechselt per Flag, OX-Button bleibt Button.
+      OX-Button kann nur den Button-Modus. Der API-Modus ist gesperrt, kein Umschalten möglich.
     </div>
   </div>
 </body>
