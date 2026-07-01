@@ -7,7 +7,7 @@ date: 2026-07-01
 
 ## Ausgangslage
 
-- Gleiche Hardware (nRF9151) für OX-Label und OX-Button
+- Gleiche Hardware für OX-Label und OX-Button
 - Produktidentität entsteht erst durch Firmware und Cloud-Konfiguration
 - Aktuell: eine gemeinsame Firmware mit Feature-Flags für beide Produkte
 - Frage: Weiter so, oder sauber trennen?
@@ -20,7 +20,7 @@ date: 2026-07-01
 
 ## Szenario A: Getrennte Firmwares
 
-- Zwei unabhängige Firmware-Produkte: ox-label und ox-button
+- Zwei unabhängige Firmware-Produkte: OX-Label und OX-Button
 - Je ein eigenes ThingsBoard Device Profile mit eigenem OTA-Kanal
 - OX-Label: erhält Label-Firmware via OTA beim Onboarding (API + Button aktiv)
 - OX-Button: erhält Button-Firmware via OTA beim Onboarding, kann nur als Button genutzt werden

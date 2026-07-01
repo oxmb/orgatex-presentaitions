@@ -104,6 +104,15 @@ tbody td { padding: 11px 20px; color: #1d1d1b; }
   border-top: 1px solid #f5f1e9;
   line-height: 1.5;
 }
+.product-tag {
+  display: inline-block;
+  background: #ffd500;
+  color: #1d1d1b;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 2px 9px;
+  letter-spacing: 0.3px;
+}
 .attr-row {
   display: flex;
   padding: 10px 20px;
