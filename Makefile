@@ -8,10 +8,13 @@ PDFS      := $(patsubst presentations/%.md,output/%.pdf,$(SOURCES))
 MOCKUPS_HTML := $(wildcard assets/mockups/*.html)
 MOCKUPS_PNG  := $(patsubst %.html,%.png,$(MOCKUPS_HTML))
 DEPLOY_DIR := $(HOME)/OneDrive/Präsentationen
+DECK       ?= fw-split-vertrieb
 
-.PHONY: all pdf reference check mockups clean deploy
-all: $(DECKS)
+.PHONY: all pdf pptx deck reference check mockups clean deploy
+all: $(PDFS) $(DECKS)
 pdf: $(PDFS)
+pptx: $(DECKS)
+deck: output/$(DECK).pdf
 
 reference: $(REFERENCE)
 
