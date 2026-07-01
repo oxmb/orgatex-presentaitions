@@ -14,7 +14,7 @@ date: 2026-07-01
 
 ## Was braucht welches Produkt?
 
-| Produkt | label_api_enabled | button_flow_enabled |
+| Produkt | API-Zugriff | Button-Flow |
 |---|---|---|
 | **OX-Label** | ✓ | ✗ |
 | **OX-Button** | ✗ | ✓ |
