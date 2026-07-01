@@ -65,10 +65,10 @@ date: 2026-07-01
 
 | Kriterium | A: Kombiniert + Flags | B: Getrennte Firmwares |
 |---|---|---|
-| Wartungsaufwand | Ein Codebase, aber Flag-Komplexität | Zwei Firmwares zu pflegen |
-| Flexibilität | Flag-Wechsel reicht für Upgrade | Kein Wechsel ohne OTA |
-| Kundenerfahrung | Kein OTA-Schritt nötig | **OX-Label** wechselt per OTA; **OX-Button** bleibt Button |
-| Time-to-Market | Schlechter: jede Änderung betrifft beide Produkte | Besser: Fokus auf die wichtigere Firmware |
+| Wartungsaufwand | ✓ Ein Codebase, aber Flag-Komplexität | ✗ Zwei Firmwares zu pflegen |
+| Flexibilität | ✓ Flag-Wechsel reicht für Upgrade | ✗ Kein Wechsel ohne OTA |
+| Kundenerfahrung | Kein OTA-Schritt nötig | **OX-Label** per OTA, **OX-Button** bleibt Button |
+| Time-to-Market | ✗ Jede Änderung betrifft beide Produkte | ✓ Fokus auf die wichtigere Firmware |
 
 ## Zur Entscheidung
 
