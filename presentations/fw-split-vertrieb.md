@@ -54,7 +54,8 @@ date: 2026-07-01
 - Onboarding per Claiming über ThingsBoard
 - **OX-Label**: Firmware im OTA-Dashboard wählen
 - **OX-Button**: bleibt fest auf Button-Firmware
-- Update beim nächsten OTA-Intervall. Sofort: Gerät 10 Sekunden gedrückt halten.
+- Update beim nächsten OTA-Intervall, bis zu 24 h ohne physischen Zugriff
+- Sofort: Gerät 10 Sekunden gedrückt halten
 ::::
 :::: column
 ![](assets/mockups/ota-dashboard.png)
@@ -67,7 +68,7 @@ date: 2026-07-01
 |---|---|---|
 | Wartungsaufwand | ✓ Ein Codebase, aber Flag-Komplexität | ✗ Zwei Firmwares zu pflegen |
 | Flexibilität | ✓ Flag-Wechsel reicht für Upgrade | ✗ Kein Wechsel ohne OTA |
-| Kundenerfahrung | Sofort per Konfiguration, kein OTA | Nur per OTA-Update: bis zu 24 h ohne Zugriff, sonst 10-Sekunden-Reset am Gerät |
+| Kundenerfahrung | Kein OTA nötig | Wechsel per OTA |
 | Time-to-Market | ✗ Jede Änderung betrifft beide Produkte | ✓ Fokus auf die wichtigere Firmware |
 
 - Für **OX-Button** kein Unterschied: die Wahl betrifft allein **OX-Label**.
