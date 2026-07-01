@@ -14,18 +14,21 @@ date: 2026-07-01
 
 ## Was braucht welches Produkt?
 
-- **OX-Label**: API für Inhalte und den Button-Flow
-- **OX-Button**: nur den Button-Flow
-- Beide brauchen Onboarding über ThingsBoard
+| Produkt | Feature-Flag | Modus |
+|---|---|---|
+| **OX-Label** | API freigegeben | API oder Button, umschaltbar |
+| **OX-Button** | API gesperrt | nur Button |
+
+: Das Produkt wird über Feature-Flags festgelegt. Ein Gerät fährt immer nur einen Modus.
 
 ## Szenario A: Kombinierte Firmware
 
 ::: columns
 :::: column
 - Eine Firmware für beide Produkte
-- Feature-Flags entscheiden, was aktiv ist
-- **OX-Label**: API und Button aktiv
-- **OX-Button**: nur Button, API gesperrt
+- Feature-Flags wählen den Modus, immer nur einen
+- **OX-Label**: API- oder Button-Modus, per Flag umschaltbar
+- **OX-Button**: fest im Button-Modus
 - Upgrade **OX-Button** auf **OX-Label**: nur Flag ändern, kein OTA
 ::::
 :::: column
