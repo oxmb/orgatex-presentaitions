@@ -23,10 +23,10 @@ date: 2026-07-01
 ::: columns
 :::: column
 - Eine Firmware für beide Produkte
-- ThingsBoard-Feature-Flags schalten Funktionen an oder ab
+- Feature-Flags entscheiden, was aktiv ist
 - **OX-Label**: API und Button aktiv
-- **OX-Button**: nur Button aktiv
-- Upgrade **OX-Button** auf **OX-Label**: Flag-Änderung reicht, kein OTA
+- **OX-Button**: nur Button, API gesperrt
+- Upgrade **OX-Button** auf **OX-Label**: nur Flag ändern, kein OTA
 ::::
 :::: column
 ![](assets/mockups/feature-flags.png)
