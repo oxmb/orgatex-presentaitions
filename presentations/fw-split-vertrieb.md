@@ -83,6 +83,9 @@ date: 2026-07-01
 - **Entschieden:**
     - Eine gemeinsame Firmware für **OX-Label** und **OX-Button** (Szenario A)
     - Button-Modus und API-Modus schließen sich gegenseitig aus
+    - **OX-Label** umschaltbar, vorerst nur durch uns (nicht im UI sichtbar)
     - **OX-Button** und **OX-Label** müssen als getrennte Produkte vermarktet werden
     - Getrennte Namen und eigene Seriennummer-Präfixe (**OX1** und **OX2**)
-- **Offen:** Getrennt beim Fertiger bestellen oder hier umetikettieren?
+    - Direkt als **OX-Button** oder **OX-Label** beim Fertiger bestellen (kein Umetikettieren)
+- **Offen:** Soll **OX-Label** den Button-Modus überhaupt unterstützen?
+- **Handlungsbedarf:** Auch im **API-Modus** muss ein Button-Druck einen Webhook auslösen (konfigurierbar)
