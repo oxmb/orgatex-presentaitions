@@ -17,6 +17,8 @@
 \newunicodechar{≤}{\ensuremath{\leq}}
 \newunicodechar{✓}{\textcolor{oxGreen}{\ding{51}}}
 \newunicodechar{✗}{\textcolor{oxOrange}{\ding{55}}}
+\newunicodechar{⊕}{\textcolor{oxGreen}{{\oxsymfont\char"2295}}}
+\newunicodechar{⊖}{\textcolor{oxOrange}{{\oxsymfont\char"2296}}}
 
 % Brand colours
 \definecolor{oxYellow}{HTML}{FFD500}
@@ -25,6 +27,9 @@
 \definecolor{oxOrange}{HTML}{E6500F}
 \definecolor{oxBlue}{HTML}{009ED5}
 \definecolor{oxGreen}{HTML}{2E7D32}
+
+% Fallback font for symbols Mundial lacks (e.g. circled ⊕ / ⊖ pro-con marks)
+\newfontfamily\oxsymfont{DejaVu Sans}
 
 % Fonts – Mundial via fontspec; \bfseries maps to Mundial Black
 \usefonttheme{professionalfonts}

@@ -66,12 +66,12 @@ date: 2026-07-01
 
 | Kriterium | A: Kombiniert + Flags | B: Getrennte Firmwares |
 |---|---|---|
-| Wartungsaufwand | ✓ Ein Codebase, aber Flag-Komplexität | ✗ Zwei Firmwares zu pflegen |
-| Flexibilität | ✓ Flag-Wechsel reicht für Upgrade | ✗ Kein Wechsel ohne OTA |
-| Kundenerfahrung | Modus-Wechsel per Konfiguration | Modus-Wechsel per OTA |
-| Time-to-Market | ✗ Jede Änderung betrifft beide Produkte | ✓ Fokus auf die wichtigere Firmware |
+| Wartungsaufwand | Eine Codebase, aber Flag-Komplexität | Zwei Firmwares zu pflegen |
+| Kundenerfahrung | ⊕ Modus-Wechsel per Konfiguration | ⊖ Modus-Wechsel per OTA |
+| Time-to-Market | ⊖ Jede Änderung betrifft beide Produkte | ⊕ Fokus auf die wichtigere Firmware |
+| Lizenz-Flexibilität | ⊕ Verschiedene Lizenz-Modelle | ⊖ Gebunden an das Gerät |
 
-- Für **OX-Button** kein Unterschied: die Wahl betrifft allein **OX-Label**.
+- Bei der **Kundenerfahrung** betrifft die Wahl allein **OX-Label**: **OX-Button** wechselt den Modus in keinem Szenario.
 
 ## Zur Entscheidung
 
