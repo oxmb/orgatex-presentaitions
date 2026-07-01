@@ -14,12 +14,12 @@ date: 2026-07-01
 
 ## Was braucht welches Produkt?
 
-| Produkt | Feature-Flag | Modus |
+| Produkt | label_api_enabled | button_flow_enabled |
 |---|---|---|
-| **OX-Label** | API freigegeben | API oder Button, umschaltbar |
-| **OX-Button** | API gesperrt | nur Button |
+| **OX-Label** | ✓ | ✗ |
+| **OX-Button** | ✗ | ✓ |
 
-: Das Produkt wird über Feature-Flags festgelegt. Ein Gerät fährt immer nur einen Modus.
+: Genau ein Flag ist aktiv, nie beide. **OX-Label** kann per Flag umschalten, **OX-Button** bleibt fest auf Button.
 
 ## Szenario A: Kombinierte Firmware
 
