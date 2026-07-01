@@ -84,15 +84,15 @@
   \vfill
 }
 
-% Frame title: thin yellow left bar, title text
+% Frame title: thin yellow left bar in the margin, title text body-aligned.
+% \llap hangs the bar to the left of the default frametitle position without
+% shifting the title text, so the heading stays aligned with the body.
 \setbeamertemplate{frametitle}{%
-  \nointerlineskip
-  \begin{beamercolorbox}[wd=\paperwidth, ht=1.1cm, dp=0cm]{frametitle}
-    \begin{tikzpicture}[overlay, remember picture]
-      \fill[oxYellow] (0, 0.05) rectangle (0.35cm, -1.05cm);
-    \end{tikzpicture}
-    \hspace{0.6cm}\vbox to 1.1cm{\vfil\usebeamerfont{frametitle}\insertframetitle\vfil}
-  \end{beamercolorbox}
+  \vskip0.35cm%
+  \leavevmode
+  \llap{{\color{oxYellow}\vrule width 0.35cm height 0.72cm depth 0.14cm}\hspace{0.4cm}}%
+  {\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\insertframetitle}%
+  \par\vskip0.15cm%
 }
 
 % Reduce default top margin of frame body
