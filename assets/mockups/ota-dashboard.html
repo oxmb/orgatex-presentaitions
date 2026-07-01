@@ -1,46 +1,55 @@
 <!doctype html>
 <html lang="de">
-<head><meta charset="utf-8"><link rel="stylesheet" href="tb-mockup.css"></head>
+<head><meta charset="utf-8"><link rel="stylesheet" href="orgatex-mockup.css"></head>
 <body>
-  <div class="tb-card">
-    <div class="tb-card-header">Firmware-Updates</div>
+  <div class="ox-card">
+    <div class="ox-card-header">Firmware-Update</div>
     <table>
       <thead>
         <tr>
           <th>Gerätename</th>
-          <th>Seriennummer</th>
-          <th>Aktuelle Version</th>
+          <th>Produkt</th>
+          <th>Version</th>
           <th>Status</th>
-          <th></th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>OX-Label-0042</td>
-          <td>SN-2024-0042</td>
+          <td>OX-Label</td>
           <td>1.2.1</td>
           <td><span class="badge badge-ok">Aktuell</span></td>
-          <td></td>
         </tr>
-        <tr>
-          <td>OX-Label-0051</td>
-          <td>SN-2024-0051</td>
+        <tr class="selected">
+          <td><strong>OX-Label-0051</strong></td>
+          <td>OX-Label</td>
           <td>1.1.8</td>
           <td><span class="badge badge-update">Update verfügbar</span></td>
-          <td><button class="btn-update">Jetzt aktualisieren</button></td>
         </tr>
         <tr>
           <td>OX-Button-0003</td>
-          <td>SN-2024-0003</td>
+          <td>OX-Button</td>
           <td>0.9.4</td>
           <td><span class="badge badge-ok">Aktuell</span></td>
-          <td></td>
         </tr>
       </tbody>
     </table>
-    <div class="tb-footer">
-      Geräte prüfen beim nächsten OTA-Intervall automatisch auf Updates.
-      Sofortige Aktualisierung: Gerät 10 Sekunden lang gedrückt halten.
+    <div class="fw-section">
+      <div class="fw-section-label">Firmware wählen: OX-Label-0051</div>
+      <div class="fw-options">
+        <div class="fw-option selected">
+          <div class="fw-option-title">OX-Label</div>
+          <div class="fw-option-sub">API + Button &middot; Version 1.2.1</div>
+        </div>
+        <div class="fw-option">
+          <div class="fw-option-title">OX-Button</div>
+          <div class="fw-option-sub">Nur Button &middot; Version 0.9.4</div>
+        </div>
+      </div>
+    </div>
+    <div class="ox-actions">
+      <button class="btn-primary">Jetzt aktualisieren</button>
+      <span class="ox-hint">Aktualisierung beim nächsten OTA-Intervall.<br>Sofort: Gerät 10 Sekunden gedrückt halten.</span>
     </div>
   </div>
 </body>

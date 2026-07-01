@@ -39,10 +39,10 @@ output/hermes-vertrieb.pptx output/hermes-vertrieb.pdf: $(MOCKUPS_PNG) assets/mo
 
 output/fw-split-vertrieb.pptx output/fw-split-vertrieb.pdf: assets/mockups/ota-dashboard.png assets/mockups/feature-flags.png
 
-assets/mockups/ota-dashboard.png: assets/mockups/ota-dashboard.html assets/mockups/tb-mockup.css scripts/build-mockups.py
+assets/mockups/ota-dashboard.png: assets/mockups/ota-dashboard.html assets/mockups/orgatex-mockup.css scripts/build-mockups.py
 	$(PYTHON) scripts/build-mockups.py $<
 
-assets/mockups/feature-flags.png: assets/mockups/feature-flags.html assets/mockups/tb-mockup.css scripts/build-mockups.py
+assets/mockups/feature-flags.png: assets/mockups/feature-flags.html assets/mockups/orgatex-mockup.css scripts/build-mockups.py
 	$(PYTHON) scripts/build-mockups.py $<
 
 output:
