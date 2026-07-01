@@ -1,16 +1,18 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: Arial, "Segoe UI", sans-serif;
-  background: #f5f1e9;
+  background: #ffffff;
   width: 900px;
+  padding: 12px 16px;
   color: #1d1d1b;
 }
 .ox-card {
   background: #ffffff;
-  margin: 24px 28px;
+  margin: 0 0 18px;
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  border: 1px solid #d0cfc7;
 }
+.ox-card:last-child { margin-bottom: 0; }
 .ox-card-header {
   padding: 12px 20px;
   font-size: 12px;
@@ -97,6 +99,23 @@ tbody td { padding: 11px 20px; color: #1d1d1b; }
   color: #6f6f6b;
   line-height: 1.5;
 }
+.btn-locked {
+  padding: 9px 22px;
+  background: #e6e2d8;
+  color: #9a9992;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.mockup-caption {
+  margin: 0 0 6px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1d1d1b;
+}
+.mockup-caption + .ox-card { margin-bottom: 20px; }
+.ox-card + .mockup-caption { margin-top: 4px; }
 .ox-footer {
   padding: 12px 20px;
   font-size: 12px;
