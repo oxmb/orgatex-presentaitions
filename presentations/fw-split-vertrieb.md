@@ -67,8 +67,10 @@ date: 2026-07-01
 |---|---|---|
 | Wartungsaufwand | ✓ Ein Codebase, aber Flag-Komplexität | ✗ Zwei Firmwares zu pflegen |
 | Flexibilität | ✓ Flag-Wechsel reicht für Upgrade | ✗ Kein Wechsel ohne OTA |
-| Kundenerfahrung | Kein OTA-Schritt nötig | **OX-Label** per OTA, **OX-Button** bleibt Button |
+| Kundenerfahrung | Sofort per Konfiguration, kein OTA | Nur per OTA-Update: bis zu 24 h ohne Zugriff, sonst 10-Sekunden-Reset am Gerät |
 | Time-to-Market | ✗ Jede Änderung betrifft beide Produkte | ✓ Fokus auf die wichtigere Firmware |
+
+- Für **OX-Button** kein Unterschied: die Wahl betrifft allein **OX-Label**.
 
 ## Zur Entscheidung
 
